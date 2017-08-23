@@ -8,9 +8,9 @@
 //Global state of session
 typedef struct
 {
-    mfm_tab** tabs; //Null terminated array of current
-                    //menus
-    int cur;        //Current active menu
+    mfm_tab* tabs; //Array of current menus
+    int len;       //Count of menus
+    int cur;       //Current active menu
     void* f_cmd;   //Commands for files
     char** bookmarks; //
 } mfm_state;

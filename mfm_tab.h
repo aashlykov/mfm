@@ -20,8 +20,7 @@ typedef struct
 //One tab
 typedef struct
 {
-    mfm_tab_item** items; //Null terminated array of
-                          //menu items
+    mfm_tab_item* items;  //Array of menu items
     char* dir;            //Directory of menu
     int act;              //Current active element
     int pos_view;         //Position of viewing menu

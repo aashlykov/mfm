@@ -51,7 +51,7 @@ void mfm_copy(mfm_state* st)
     //Collect all items to copy
     mfm_copy_item_udata udata;
     memset(&udata, 0, sizeof(udata));
-    udata.dest = st->tabs[st->cur]->dir;
+    udata.dest = st->tabs[st->cur].dir;
     mfm_travers_all_selected(st, mfm_copy_item, &udata);
 
     //Do the operations
@@ -138,7 +138,7 @@ void mfm_move(mfm_state* st)
     //Collect items to copy
     mfm_move_item_udata udata;
     memset(&udata, 0, sizeof(udata));
-    udata.cu.dest = st->tabs[st->cur]->dir;
+    udata.cu.dest = st->tabs[st->cur].dir;
     mfm_travers_all_selected(st, mfm_move_item, &udata);
 
     //Do the operations
@@ -153,14 +153,11 @@ void mfm_move(mfm_state* st)
     }
 
     //Update the changed tabs
-    for (int i = 0; i < 10; i++) {
-        if (!(st->tabs[i])) {
-            break;
-        }
-        int res = chdir(st->tabs[i]->dir);
-        mfm_init_tab(st->tabs[i], &(st->f_cmd));
+    for (int i = 0; i < st->len; i++) {
+        int res = chdir(st->tabs[i].dir);
+        mfm_init_tab(st->tabs + i, &(st->f_cmd));
     }
-    int res = chdir(st->tabs[st->cur]->dir);
+    int res = chdir(st->tabs[st->cur].dir);
 
     //Free the data
     mfm_destroy_list(udata.cu.hd);

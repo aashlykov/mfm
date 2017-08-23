@@ -22,23 +22,22 @@ int main(int argc, char** argv)
     st.f_cmd = NULL;
     mfm_read_config(&(st.f_cmd));
     st.bookmarks = mfm_read_bookmarks();
-
-    //Init tabs from command line params
-    st.tabs = calloc(sizeof(mfm_tab*), argc + 1);
-    for (int i = 0; i < argc; i++) {
-        st.tabs[i] = calloc(sizeof(mfm_tab), 1);
-        int res = chdir(argv[i]);
-        mfm_init_tab(st.tabs[i], &(st.f_cmd));
-    }
-
+    
     //If there is no params - init current directory
-    if (argc == 0) {
-        st.tabs = realloc(st.tabs, sizeof(mfm_tab*) * 2);
-        st.tabs[0] = calloc(sizeof(mfm_tab), 1);
-        mfm_init_tab(st.tabs[0], &(st.f_cmd));
-        st.tabs[1] = NULL;
+    if (argc == 1) {
+        st.tabs = calloc(sizeof(mfm_tab), 1);
+        mfm_init_tab(st.tabs, &(st.f_cmd));
+        st.len = 1;
+    } else {
+        //Init tabs from command line params
+        st.tabs = calloc(sizeof(mfm_tab), argc - 1);
+        st.len = argc - 1;
+        for (int i = 1; i < argc; i++) {
+            int res = chdir(argv[i]);
+            mfm_init_tab(st.tabs + i - 1, &(st.f_cmd));
+        }
     }
-
+    
     st.cur = 0;
 
     printf("%s", "\e[1m\e[?25l");
@@ -58,7 +57,7 @@ int mfm_main(mfm_state* st)
     mfm_scr_size(&h, &w);
 
     //Draw current tab
-    mfm_tab* tab = st->tabs[st->cur];
+    mfm_tab* tab = st->tabs + st->cur;
     int res = chdir(tab->dir);
     mfm_correct_tab(tab, h, w);
     mfm_draw_tab(tab, h, w);

@@ -65,10 +65,11 @@ mfm_tab_item_props mfm_is_exec(
 //Comparation function for sorting entries in directory
 int mfm_cmp_tab_items(const void* one, const void* two)
 {
+    printf("%s\n", "2");
     mfm_tab_item_props p_one, p_two;
-    p_one = (*(mfm_tab_item**)one)->props;
+    p_one = ((mfm_tab_item*)one)->props;
     p_one &= MFM_DIR;
-    p_two = (*(mfm_tab_item**)two)->props;
+    p_two = ((mfm_tab_item*)two)->props;
     p_two &= MFM_DIR;
     if (p_one == MFM_DIR && p_two != MFM_DIR) {
         return -1;
@@ -77,8 +78,8 @@ int mfm_cmp_tab_items(const void* one, const void* two)
         return 1;
     }
     return strcmp(
-        (*(mfm_tab_item**)one)->text,
-        (*(mfm_tab_item**)two)->text
+        ((mfm_tab_item*)one)->text,
+        ((mfm_tab_item*)two)->text
     );
 }
 
@@ -89,12 +90,12 @@ void mfm_destroy_tab(mfm_tab* tab)
         return;
     }
     free(tab->dir);
-    int i=0;
+    int i = 0;
     mfm_tab_item* it;
     if (tab->items) {
-        while (it = tab->items[i++]) {
-            free(it->text);
-            free(it);
+        while (i < tab->len) {
+            free(tab->items[i].text);
+            i++;
         }
     }
     free(tab->items);
@@ -118,7 +119,7 @@ int mfm_init_tab(mfm_tab* tab, void** f_cmd)
     //Set current directory of menu
     tab->dir = malloc(256);
     tab->dir = getcwd(tab->dir, 256);
-    tab->dir = realloc(tab->dir, strlen(tab->dir)+1);
+    tab->dir = realloc(tab->dir, strlen(tab->dir) + 1);
 
     //Set active element and position of view
     tab->act = 0;
@@ -126,16 +127,15 @@ int mfm_init_tab(mfm_tab* tab, void** f_cmd)
 
     //Add items from directory to menu
     int temp_count = 20;
-    tab->items = calloc(sizeof(mfm_tab_item*), temp_count);
+    tab->items = calloc(sizeof(mfm_tab_item), temp_count);
 
     //Struct for info about file
     struct stat f_info;
-    tab->items[0] = malloc(sizeof(mfm_tab_item));
-    tab->items[0]->props = MFM_DIR;
-    tab->items[0]->text = malloc(3);
-    tab->items[0]->text[0] = '.';
-    tab->items[0]->text[1] = '.';
-    tab->items[0]->text[2] = '\0';
+    tab->items[0].props = MFM_DIR;
+    tab->items[0].text = malloc(3);
+    tab->items[0].text[0] = '.';
+    tab->items[0].text[1] = '.';
+    tab->items[0].text[2] = '\0';
     tab->len = 1;
 
     //Traverse directory
@@ -152,15 +152,14 @@ int mfm_init_tab(mfm_tab* tab, void** f_cmd)
     //Resize the items array
     tab->items = realloc(
         tab->items,
-        sizeof(mfm_tab_item*) * (tab->len + 1)
+        sizeof(mfm_tab_item) * (tab->len + 1)
     );
-    tab->items[tab->len] = NULL;
 
     //Sort list (directories in the beginning)
     qsort(
         tab->items,
         tab->len,
-        sizeof(mfm_tab_item*),
+        sizeof(mfm_tab_item),
         mfm_cmp_tab_items
     );
 
@@ -190,23 +189,22 @@ int mfm_init_tab_item(char* name, struct stat* st, void* udata)
         temp_count += 20;
         tab->items = realloc(
             tab->items,
-            sizeof(mfm_tab_item*) * temp_count
+            sizeof(mfm_tab_item) * temp_count
         );
     }
 
     //Save the name of file
-    tab->items[i] = malloc(sizeof(mfm_tab_item));
-    tab->items[i]->text = malloc(strlen(name)+1);
-    strcpy(tab->items[i]->text, name);
+    tab->items[i].text = malloc(strlen(name)+1);
+    strcpy(tab->items[i].text, name);
 
     //Is it directory?
     if (S_ISDIR(st->st_mode)) {
-        tab->items[i]->props = MFM_DIR;
+        tab->items[i].props = MFM_DIR;
     } else if (S_ISDIR(st->st_mode)) {
-        tab->items[i]->props = MFM_REG;
+        tab->items[i].props = MFM_REG;
     //Or executable?
     } else {
-        tab->items[i]->props = mfm_is_exec(name, st, f_cmd);
+        tab->items[i].props = mfm_is_exec(name, st, f_cmd);
     }
 
     //Finish work
@@ -227,26 +225,26 @@ void mfm_draw_tab(
     int scr_pos,
         //Position in the menu
         tab_pos = tab->pos_view,
-        //Offset by emty line between dirs and files
+        //Offset by empty line between dirs and files
         off = 0;
 
     //Lines with text
     for(
         scr_pos = 2;
-        scr_pos <= h - 2 && tab->items[tab_pos];
+        scr_pos <= h - 2 && tab_pos < tab->len;
         tab_pos++, scr_pos++
     ) {
-        if (off != !(tab->items[tab_pos]->props & MFM_DIR)) {
+        if (off != !(tab->items[tab_pos].props & MFM_DIR)) {
             printf("\e[40m\e[%i;1H\e[2K", scr_pos);
         }
-        off = !(tab->items[tab_pos]->props & MFM_DIR);
+        off = !(tab->items[tab_pos].props & MFM_DIR);
         printf(
             "\e[%i;1H\e[%i;%im",
             scr_pos + off,
-            tab->items[tab_pos]->props & MFM_SEL ? 33 :
-                tab->items[tab_pos]->props & MFM_EXE ? 36 : 37,
+            tab->items[tab_pos].props & MFM_SEL ? 33 :
+                tab->items[tab_pos].props & MFM_EXE ? 36 : 37,
             tab_pos == tab->act ? 42 : 40);
-        printf("%s\e[0K", tab->items[tab_pos]->text);
+        printf("%s\e[0K", tab->items[tab_pos].text);
     }
 
     //Empty lines
@@ -261,8 +259,8 @@ void mfm_draw_tab(
     //Show current position in menu
     printf(
         "\e[36;44m\e[1;%iH\e[0K%i%c",
-        w-3,
-        (tab->act+1) * 100 / tab->len,
+        w - 3,
+        (tab->act + 1) * 100 / tab->len,
         '%'
    );
 }
@@ -273,7 +271,7 @@ void mfm_correct_tab(mfm_tab* tab, int h, int w){
         tab->pos_view = tab->act;
         return;
     }
-    if (tab->act - tab->pos_view > h-4) {
+    if (tab->act - tab->pos_view > h - 4) {
         tab->pos_view = tab->act - h + 4;
     }
 }

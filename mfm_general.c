@@ -17,24 +17,24 @@ char* mfm_substitute(mfm_tab* tab, char* orig)
     //Length and string with selected files
     int f_len = 0;
     char* files;
-    for (int i = 0; tab->items[i]; i++) {
-        if (tab->items[i]->props & MFM_SEL) {
-            f_len += strlen(tab->items[i]->text) + 3;
+    for (int i = 0; i < tab->len; i++) {
+        if (tab->items[i].props & MFM_SEL) {
+            f_len += strlen(tab->items[i].text) + 3;
         }
     }
     if (!f_len) {
-        f_len = strlen(tab->items[act]->text) + 3;
+        f_len = strlen(tab->items[act].text) + 3;
         files = malloc(f_len);
         files[0] = '"';
-        strcpy(files + 1, tab->items[act]->text);
+        strcpy(files + 1, tab->items[act].text);
     } else {
         files = malloc(f_len);
         int cur = 0;
-        for (int i = 0; tab->items[i]; i++) {
-            if (tab->items[i]->props & MFM_SEL) {
+        for (int i = 0; i < tab->len; i++) {
+            if (tab->items[i].props & MFM_SEL) {
                 files[cur++] = '"';
-                strcpy(files + cur, tab->items[i]->text);
-                cur += strlen(tab->items[i]->text);
+                strcpy(files + cur, tab->items[i].text);
+                cur += strlen(tab->items[i].text);
                 files[cur++] = '"';
                 files[cur++] = ' ';
             }
@@ -50,11 +50,9 @@ char* mfm_substitute(mfm_tab* tab, char* orig)
         if (orig[i] == '%') {
             if (orig[++i] == '%') {
                 r_len++;
-            }
-            else if (orig[i] == 'f') {
+            } else if (orig[i] == 'f') {
                 r_len += f_len;
-            }
-            else {
+            } else {
                 r_len += 2;
             }
         } else {
@@ -67,9 +65,9 @@ char* mfm_substitute(mfm_tab* tab, char* orig)
     int cur = 0;
     for (int i = 0; orig[i]; i++) {
         if (orig[i] == '%') {
-            if (orig[++i] == '%')
+            if (orig[++i] == '%') {
                 result[cur++] = '%';
-            else if (orig[i] == 'f') {
+            } else if (orig[i] == 'f') {
                 strcpy(result + cur, files);
                 cur += f_len;
             } else {
@@ -310,7 +308,7 @@ void mfm_draw_numbers(mfm_state* st, int h, int w)
 {
     int i = 0;
     printf("\e[%i;%iH", h, w - 10);
-    while (st->tabs[i] != NULL) {
+    while (i < st->len) {
         if (i == st->cur) {
             printf("%s", "\e[31;43m ");
         } else {
@@ -376,15 +374,14 @@ void mfm_travers_all_selected(
     void (*cb)(mfm_tab*, mfm_tab_item*, void*),
     void* udata
 ) {
-    for (int i = 0; st->tabs[i]; i++) {
+    for (int i = 0; i < st->len; i++) {
         if (st->cur == i) {
             continue;
         }
-        mfm_tab* tab = st->tabs[i];
-        for (int j = 0; tab->items[j]; j++) {
-            mfm_tab_item* it = tab->items[j];
-            if (it->props & MFM_SEL) {
-                cb(tab, it, udata);
+        mfm_tab* tab = st->tabs + i;
+        for (int j = 0; j < tab->len; j++) {
+            if (tab->items[j].props & MFM_SEL) {
+                cb(tab, tab->items + j, udata);
             }
         }
     }

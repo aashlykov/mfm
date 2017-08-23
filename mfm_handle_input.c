@@ -28,14 +28,14 @@ void mfm_mark(mfm_tab* tab)
     }
 
     //Mark or unmark the element
-    if (tab->items[act]->props & MFM_SEL) {
-        tab->items[act]->props &= ~MFM_SEL;
+    if (tab->items[act].props & MFM_SEL) {
+        tab->items[act].props &= ~MFM_SEL;
     } else {
-        tab->items[act]->props |= MFM_SEL;
+        tab->items[act].props |= MFM_SEL;
     }
 
     //Go to next element
-    if (tab->items[act + 1]) {
+    if (tab->act < tab->len) {
         tab->act++;
     }
 }
@@ -44,7 +44,7 @@ void mfm_mark(mfm_tab* tab)
 void mfm_run_shell(mfm_state* st)
 {
     //Current menu
-    mfm_tab* tab = st->tabs[st->cur];
+    mfm_tab* tab = st->tabs + st->cur;
 
     //Current position in menu
     int act = tab->act;
@@ -56,19 +56,19 @@ void mfm_run_shell(mfm_state* st)
     int sum = 0;
 
     //Set files to env vars
-    for (int i = 0; tab->items[i]; i++) { //Count needed memory
-        if (tab->items[i]->props & MFM_SEL) {
-            sum += strlen(tab->items[i]->text) + 1;
+    for (int i = 0; i < tab->len; i++) { //Count needed memory
+        if (tab->items[i].props & MFM_SEL) {
+            sum += strlen(tab->items[i].text) + 1;
         }
     }
     //Put data to the memory
     if (sum) {
         tmp = malloc(sum);
         sum = 0;
-        for (int i = 0; tab->items[i]; i++) {
-            if (tab->items[i]->props & MFM_SEL) {
-                strcpy(tmp+sum, tab->items[i]->text);
-                sum += strlen(tab->items[i]->text);
+        for (int i = 0; i < tab->len; i++) {
+            if (tab->items[i].props & MFM_SEL) {
+                strcpy(tmp + sum, tab->items[i].text);
+                sum += strlen(tab->items[i].text);
                 ((char*)tmp)[sum] = '/';
                 sum++;
             }
@@ -78,7 +78,7 @@ void mfm_run_shell(mfm_state* st)
         setenv("FF", tmp, 1);
         free(tmp);
     } else {
-        setenv("FF", tab->items[act]->text, 1);
+        setenv("FF", tab->items[act].text, 1);
     }
 
     //Run shell
@@ -97,22 +97,22 @@ void mfm_action(mfm_tab* tab, void** f_cmd)
     int act = tab->act;
 
     //Go to the dir
-    if (tab->items[act]->props & MFM_DIR) {
-        int res = chdir(tab->items[act]->text);
+    if (tab->items[act].props & MFM_DIR) {
+        int res = chdir(tab->items[act].text);
         mfm_init_tab(tab, f_cmd);
         return;
     }
 
     //Apply command to the file of this type
     char*** comm = NULL;
-    for (int i = 0; tab->items[i] && !comm; i++) {
-        if (tab->items[i]->props & MFM_SEL) {
-            comm = tfind(tab->items[i], f_cmd, mfm_get_kv);
+    for (int i = 0; i < tab->len && !comm; i++) {
+        if (tab->items[i].props & MFM_SEL) {
+            comm = tfind(tab->items + i, f_cmd, mfm_get_kv);
         }
     }
 
     if (!comm) {
-        comm = tfind(tab->items[act]->text, f_cmd, mfm_get_kv);
+        comm = tfind(tab->items[act].text, f_cmd, mfm_get_kv);
     }
 
     if (comm) {
@@ -123,10 +123,10 @@ void mfm_action(mfm_tab* tab, void** f_cmd)
     }
 
     //If file is executable - run it
-    if (tab->items[act]->props & MFM_EXE) {
+    if (tab->items[act].props & MFM_EXE) {
         void* tmp =
-            malloc(strlen(tab->items[act]->text)+3);
-        sprintf(tmp, "./%s", tab->items[act]->text);
+            malloc(strlen(tab->items[act].text) + 3);
+        sprintf(tmp, "./%s", tab->items[act].text);
         mfm_command(tmp);
         free(tmp);
     }
@@ -136,17 +136,19 @@ void mfm_action(mfm_tab* tab, void** f_cmd)
 void mfm_rename(mfm_tab* tab, int h, int w)
 {
     int act = tab->act;
-    if (!act) return;
+    if (!act) {
+        return;
+    }
     printf("\e[%i;1H\e[37;41m\e[2K", h);
     char* new_name = mfm_read_line(
         h,
         1,
         w,
-        tab->items[act]->text);
+        tab->items[act].text);
     if (!new_name) {
         return;
     }
-    rename(tab->items[act]->text, new_name);
+    rename(tab->items[act].text, new_name);
     free(new_name);
 }
 
@@ -186,11 +188,11 @@ void mfm_delete(mfm_tab* tab, int h, int w)
     //If user confirmed - delete selected files
     ex = 0;
     struct stat st;
-    for (int i = 0; tab->items[i]; i++) {
-        mfm_tab_item* it = tab->items[i];
-        if (it->props & MFM_SEL) {
-            if (stat(it->text, &st) != -1) {
-                mfm_delete_item(it->text, &st, NULL);
+    for (int i = 0; i < tab->len; i++) {
+        mfm_tab_item it = tab->items[i];
+        if (it.props & MFM_SEL) {
+            if (stat(it.text, &st) != -1) {
+                mfm_delete_item(it.text, &st, NULL);
             }
             ex = 1;
         }
@@ -198,8 +200,8 @@ void mfm_delete(mfm_tab* tab, int h, int w)
 
     //If no files selected - delete the current
     if (!ex) {
-        if (stat(tab->items[act]->text, &st) != -1) {
-            mfm_delete_item(tab->items[act]->text, &st, NULL);
+        if (stat(tab->items[act].text, &st) != -1) {
+            mfm_delete_item(tab->items[act].text, &st, NULL);
         }
     }
 }
@@ -207,43 +209,38 @@ void mfm_delete(mfm_tab* tab, int h, int w)
 //Create the new tab
 void mfm_new_tab(mfm_state* st)
 {
-    int i = 0;
-    while (st->tabs[i]) i++;
-    if (i == 10) {
+    if (st->len == 10) {
         return;
     }
+    char tmp[200];
+    st->len++;
     st->tabs = realloc(
         st->tabs,
-        sizeof(mfm_tab*)*(i+2)
+        sizeof(mfm_tab) * (st->len)
     );
-    st->tabs[i + 1] = NULL;
-    st->tabs[i] = calloc(sizeof(mfm_tab), 1);
-    mfm_init_tab(st->tabs[i], &(st->f_cmd));
-    st->cur = i;
+    memset(st->tabs + st->len - 1, 0, sizeof(mfm_tab));
+    mfm_init_tab(st->tabs + st->len - 1, &(st->f_cmd));
+    st->cur = st->len - 1;
 }
 
 //Close current tab
 int mfm_close_tab(mfm_state* st)
 {
     int i = st->cur;
-    mfm_destroy_tab(st->tabs[i]);
-    free(st->tabs[i]);
-    while (st->tabs[i]) {
+    mfm_destroy_tab(st->tabs + st->cur);
+    st->len--;
+    while (i < st->len) {
         st->tabs[i] = st->tabs[i+1];
         i++;
     }
-    if (!(st->tabs[0])) {
+    if (!(st->len)) {
         return 1;
-    }
-    i = 0;
-    while (st->tabs[i]) {
-        i++;
     }
     st->tabs = realloc(
         st->tabs,
-        sizeof(mfm_tab*)*(i + 1));
-    if (st->cur > i - 1) {
-        st->cur = i - 1;
+        sizeof(mfm_tab) * st->len);
+    if (st->cur >= st->len) {
+        st->cur = st->len - 1;
     }
     return 0;
 }
@@ -286,7 +283,7 @@ int mfm_handle_input(
     int w
 ) {
     //Current menu
-    mfm_tab* tab = st->tabs[st->cur];
+    mfm_tab* tab = st->tabs + st->cur;
 
     //Current position in menu
     int act = tab->act;
@@ -303,13 +300,13 @@ int mfm_handle_input(
 
     switch (buf[0]) {
     case '=': case '+':
-        for (int i = 1; tab->items[i]; i++) {
-            tab->items[i]->props |= MFM_SEL;
+        for (int i = 1; i < tab->len; i++) {
+            tab->items[i].props |= MFM_SEL;
         }
         break;
     case '-': case '_':
-        for (int i = 1; tab->items[i]; i++) {
-            tab->items[i]->props &= ~MFM_SEL;
+        for (int i = 1; i < tab->len; i++) {
+            tab->items[i].props &= ~MFM_SEL;
         }
         break;
     case ' ':
@@ -346,10 +343,7 @@ int mfm_handle_input(
     case 'd': case 'D': {
         printf("\e[%i;1H\e[41m\e[2K", h);
         char* new_dir = mfm_read_line(h, 1, w, NULL);
-        mkdir(new_dir,
-        S_IRUSR | S_IWUSR | S_IXUSR |
-        S_IRGRP | S_IXGRP |
-        S_IROTH | S_IXOTH);
+        mfm_mkdir(new_dir);
         free(new_dir);
         ri = 1;
         break;
@@ -393,7 +387,7 @@ int mfm_handle_key(
     int h,
     int w
 ) {
-    mfm_tab* tab = st->tabs[st->cur];
+    mfm_tab* tab = st->tabs + st->cur;
     int ri = 0;
     int act = tab->act;
     switch (key) {
@@ -403,7 +397,7 @@ int mfm_handle_key(
         }
         break;
     case MFM_KEY_DOWN:
-        if (!tab->items[act+1]) {
+        if (act + 1 == tab->len) {
             break;
         }
         tab->act++;
@@ -414,7 +408,7 @@ int mfm_handle_key(
         }
         break;
     case MFM_KEY_RIGHT:
-        if (st->tabs[st->cur+1]) {
+        if (st->cur + 1 < st->len) {
             st->cur++;
         }
         break;
@@ -427,7 +421,7 @@ int mfm_handle_key(
     case MFM_KEY_PGDN:
         for(
             int i = 0;
-            i < 6 && tab->items[++act];
+            i < 6 && ++act < tab->len;
             i++
         );
         tab->act = act - 1;
@@ -436,7 +430,7 @@ int mfm_handle_key(
         tab->act = 0;
         break;
     case MFM_KEY_END:
-        for (; tab->items[++act];);
+        for (; ++act < tab->len;);
         tab->act = act - 1;
         break;
     case MFM_KEY_INSERT:
