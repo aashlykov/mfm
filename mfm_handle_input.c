@@ -35,9 +35,7 @@ void mfm_mark(mfm_tab* tab)
     }
 
     //Go to next element
-    if (tab->act < tab->len) {
-        tab->act++;
-    }
+    tab->act++;
 }
 
 //Run shell
@@ -392,14 +390,9 @@ int mfm_handle_key(
     int act = tab->act;
     switch (key) {
     case MFM_KEY_UP:
-        if (tab->act) {
-            tab->act--;
-        }
+        tab->act--;
         break;
     case MFM_KEY_DOWN:
-        if (act + 1 == tab->len) {
-            break;
-        }
         tab->act++;
         break;
     case MFM_KEY_LEFT:
@@ -414,24 +407,15 @@ int mfm_handle_key(
         break;
     case MFM_KEY_PGUP:
         tab->act -= 5;
-        if (tab->act < 0) {
-            tab->act = 0;
-        }
         break;
     case MFM_KEY_PGDN:
-        for(
-            int i = 0;
-            i < 6 && ++act < tab->len;
-            i++
-        );
-        tab->act = act - 1;
+        tab->act += 5;
         break;
     case MFM_KEY_HOME:
         tab->act = 0;
         break;
     case MFM_KEY_END:
-        for (; ++act < tab->len;);
-        tab->act = act - 1;
+        tab->act = tab->len - 1;
         break;
     case MFM_KEY_INSERT:
         mfm_mark(tab);

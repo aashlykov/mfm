@@ -8,78 +8,137 @@
 #include "mfm_general.h"
 #include "mfm_input.h"
 
-//Substitute %f by selected files and %% by %
+char* mfm_all_selected(mfm_tab* tab);
+char* mfm_subs_single(
+    char* res,
+    int offset,
+    char* files,
+    int files_len,
+    int* delta
+);
+char* mfm_del_percent(char* res, int offset, int* delta);
+
+//Substitute all %f by selected files and %% by %
 char* mfm_substitute(mfm_tab* tab, char* orig)
 {
-    //Active element in menu
-    int act = tab->act;
-
-    //Length and string with selected files
-    int f_len = 0;
-    char* files;
-    for (int i = 0; i < tab->len; i++) {
-        if (tab->items[i].props & MFM_SEL) {
-            f_len += strlen(tab->items[i].text) + 3;
+    char* files = mfm_all_selected(tab);
+    int files_len = strlen(files);
+    
+    char* res = malloc(strlen(orig) + 1);
+    strcpy(res, orig);
+    
+    int delta = 0;
+    char* dest;
+    while (dest = strstr(res + delta, "%f")) {
+        if (dest == res) {
+            res = mfm_subs_single(res, dest - res, files, files_len, &delta);
+        } else if (dest[-1] == '%') {
+            res = mfm_del_percent(res, dest - res, &delta);
+        } else {
+            res = mfm_subs_single(res, dest - res, files, files_len, &delta);
         }
     }
-    if (!f_len) {
-        f_len = strlen(tab->items[act].text) + 3;
-        files = malloc(f_len);
-        files[0] = '"';
-        strcpy(files + 1, tab->items[act].text);
-    } else {
-        files = malloc(f_len);
-        int cur = 0;
-        for (int i = 0; i < tab->len; i++) {
-            if (tab->items[i].props & MFM_SEL) {
-                files[cur++] = '"';
-                strcpy(files + cur, tab->items[i].text);
-                cur += strlen(tab->items[i].text);
-                files[cur++] = '"';
-                files[cur++] = ' ';
-            }
-        }
-    }
-    files[f_len - 1] = '\0';
-    files[f_len - 2] = '"';
-    f_len--;
+    
+    free(files);
+    
+    return res;
+}
 
-    //Length of result string
+//Substitute files into res, at dest position
+char* mfm_subs_single(
+    char* res,
+    int offset,
+    char* files,
+    int files_len,
+    int* delta
+) {
+    *delta = offset + files_len;
+    int res_len = strlen(res);
+    res = realloc(res, res_len + files_len - 1);
+    memmove(res + offset + files_len, res + offset + 2, res_len - offset - 1);
+    memcpy(res + offset, files, files_len);
+    return res;
+}
+
+//Delete % symbol of %%f sequence from 
+char* mfm_del_percent(char* res, int offset, int* delta)
+{
+    *delta = offset + 1;
+    int res_len = strlen(res);
+    memmove(res + offset - 1, res + offset, res_len - offset + 1);
+    return realloc(res, res_len - 1);
+}
+
+int mfm_shell_len(char* text);
+void mfm_write_single_item(char* dest, char* item);
+
+//Form the selected items to single string
+char* mfm_all_selected(mfm_tab* tab)
+{
     int r_len = 0;
-    for (int i = 0; orig[i]; i++) {
-        if (orig[i] == '%') {
-            if (orig[++i] == '%') {
-                r_len++;
-            } else if (orig[i] == 'f') {
-                r_len += f_len;
-            } else {
-                r_len += 2;
-            }
-        } else {
-            r_len++;
+    char* res = malloc(r_len + 1);
+    char* cur;
+    res[0] = '\0';
+    for (int i = 0; i < tab->len; i++) {
+        mfm_tab_item* it = tab->items + i;
+        if (!(it->props & MFM_SEL)) {
+            continue;
         }
+        char* text = it->text;
+        int delta = mfm_shell_len(text);
+        res = realloc(res, r_len + delta);
+        cur = res + r_len;
+        r_len += delta;
+        mfm_write_single_item(cur, text);
     }
+    if (!r_len) {
+        char* text = tab->items[tab->act].text;
+        r_len = mfm_shell_len(text);
+        res = malloc(r_len);
+        mfm_write_single_item(res, text);
+    }
+    
+    res[r_len] = '\0';
+    
+    return res;
+}
 
-    //Forming the result string
-    char* result = malloc(r_len + 1);
-    int cur = 0;
-    for (int i = 0; orig[i]; i++) {
-        if (orig[i] == '%') {
-            if (orig[++i] == '%') {
-                result[cur++] = '%';
-            } else if (orig[i] == 'f') {
-                strcpy(result + cur, files);
-                cur += f_len;
-            } else {
-                result[cur++] = '%';
-                result[cur++] = orig[i];
-            }
-        } else {
-            result[cur++] = orig[i];
+//Count len of string in the shell command
+int mfm_shell_len(char* text)
+{
+    int res = 3;
+    for (int i = 0; text[i]; i++) {
+        switch (text[i]) {
+        case '\\':
+        case '"':
+            res += 2;
+        default:
+            res++;
         }
     }
-    result[r_len] = '\0';
-    return result;
+    return res;
+}
+
+//Write to the buffer single item
+void mfm_write_single_item(char* dest, char* item)
+{
+    *dest++ = '"';
+    for (char* c = item; *c; c++) {
+        switch (*c) {
+        case '\\':
+            *dest++ = '\\';
+            *dest++ = '\\';
+            break;
+        case '"':
+            *dest++ = '\\';
+            *dest++ = '"';
+            break;
+        default:
+            *dest++ = *c;
+        }
+    }
+    *dest++ = '"';
+    *dest = ' ';
 }
 
 //Cut the \r\n symbols from string

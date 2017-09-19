@@ -266,7 +266,13 @@ void mfm_draw_tab(
 }
 
 //Correct tab params
-void mfm_correct_tab(mfm_tab* tab, int h, int w){
+void mfm_correct_tab(mfm_tab* tab, int h, int w)
+{
+    if (tab->act < 0) {
+        tab->act = 0;
+    } else if (tab->act > tab->len - 1) {
+        tab->act = tab->len - 1;
+    }
     if (tab->pos_view > tab->act){
         tab->pos_view = tab->act;
         return;
