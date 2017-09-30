@@ -32,7 +32,7 @@ int main(int argc, char** argv)
         //Init tabs from command line params
         st.tabs = calloc(sizeof(mfm_tab), argc - 1);
         st.len = argc - 1;
-        for (int i = 1; i < argc; i++) {
+        for (int i = 1; i < argc && i <= 10; i++) {
             int res = chdir(argv[i]);
             mfm_init_tab(st.tabs + i - 1, &(st.f_cmd));
         }
