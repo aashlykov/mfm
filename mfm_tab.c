@@ -235,7 +235,7 @@ void mfm_draw_tab(
         tab_pos++, scr_pos++
     ) {
         if (off != !(tab->items[tab_pos].props & MFM_DIR)) {
-            printf("\e[45m\e[%i;1H\e[2K", scr_pos);
+            printf("\e[22m\e[45m\e[%i;1H\e[2K\e[1m", scr_pos);
         }
         off = !(tab->items[tab_pos].props & MFM_DIR);
         printf(
