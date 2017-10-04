@@ -5,6 +5,7 @@
 #include <errno.h>
 #include <error.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <sys/types.h>
 #include <dirent.h>
 
@@ -127,6 +128,22 @@ void mfm_read_key(char* buf, mfm_key* key)
     if (buf[0] != 27) {
         return;
     }
+
+    //Clear input stream
+    int f = 0;
+    for (int i = 1; i <= 8; i++) {
+        if (buf[i] == '\e') {
+            f = 1;
+        }
+        if (f) {
+            buf[i] = '\0';
+        }
+    }
+    char c;
+    int fs = fcntl(0, F_GETFL, 0);
+    fcntl(0, F_SETFL, fs | O_NONBLOCK);
+    while (read(0, &c, 1) > 0);
+    fcntl(0, F_SETFL, fs);
 
     //Try to detect special key
     for (int i = 0; i < 30; i++) {
