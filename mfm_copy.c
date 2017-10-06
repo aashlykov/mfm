@@ -13,7 +13,9 @@
 #include "mfm_input.h"
 #include "mfm_tab.h"
 
-//Files/Directories to be copied
+/**
+ * Files/Directories to be copied
+ */
 typedef struct mfm_list
 {
     char* src;
@@ -21,7 +23,9 @@ typedef struct mfm_list
     struct mfm_list* next;
 } mfm_list;
 
-//List of items to delete
+/**
+ * List of items to delete
+ */
 typedef struct mfm_list_to_delete
 {
     mfm_tab* tab;
@@ -45,7 +49,10 @@ void mfm_mk_dirs(mfm_list* ls);
 void mfm_copy_list(mfm_list* ls, long long ttl);
 void mfm_destroy_list(mfm_list* ls);
 
-//Main copy operation
+/**
+ * Main copy operation
+ * @param st
+ */
 void mfm_copy(mfm_state* st)
 {
     //Collect all items to copy
@@ -71,7 +78,12 @@ void mfm_copy(mfm_state* st)
 
 int mfm_copy_cb(char* name, struct stat* st, void* udata);
 
-//Copy single item from menu
+/**
+ * Copy single item from menu
+ * @param tab
+ * @param it
+ * @param udata
+ */
 void mfm_copy_item(mfm_tab* tab, mfm_tab_item* it, void* udata)
 {
     char* full = mfm_append_paths(tab->dir, it->text);
@@ -83,7 +95,13 @@ void mfm_copy_item(mfm_tab* tab, mfm_tab_item* it, void* udata)
     free(full);
 }
 
-//Copy items and subitems
+/**
+ * Copy items and subitems
+ * @param name
+ * @param st
+ * @param udata
+ * @return
+ */
 int mfm_copy_cb(char* name, struct stat* st, void* udata)
 {
     if (mfm_dots_dir(name)) {
@@ -132,7 +150,10 @@ typedef struct
 void mfm_delete_list(mfm_list_to_delete* ls);
 void mfm_delete_list_destroy(mfm_list_to_delete* ls);
 
-//Main move operation
+/**
+ * Main move operation
+ * @param st
+ */
 void mfm_move(mfm_state* st)
 {
     //Collect items to copy
@@ -165,7 +186,12 @@ void mfm_move(mfm_state* st)
     mfm_delete_list_destroy(udata.hdel);
 }
 
-//Move single item from menu
+/**
+ * Move single item from menu
+ * @param tab
+ * @param it
+ * @param udata
+ */
 void mfm_move_item(mfm_tab* tab, mfm_tab_item* it, void* udata)
 {
     char* old = mfm_append_paths(tab->dir, it->text);
@@ -192,7 +218,10 @@ void mfm_move_item(mfm_tab* tab, mfm_tab_item* it, void* udata)
     free(new);
 }
 
-//Delete the items from list
+/**
+ * Delete the items from list
+ * @param ls
+ */
 void mfm_delete_list(mfm_list_to_delete* ls)
 {
     while (ls) {
@@ -206,7 +235,10 @@ void mfm_delete_list(mfm_list_to_delete* ls)
     }
 }
 
-//Destroy list of items to delete
+/**
+ * Destroy list of items to delete
+ * @param ls
+ */
 void mfm_delete_list_destroy(mfm_list_to_delete* ls)
 {
     while (ls) {
@@ -216,7 +248,6 @@ void mfm_delete_list_destroy(mfm_list_to_delete* ls)
     }
 }
 
-//Copy file
 int mfm_copy_file(
     char* source,
     char* dest,
@@ -224,10 +255,13 @@ int mfm_copy_file(
     long long ttl
 );
 
-//Show copy progress
 void mfm_copy_progress(long long cr, long long ttl);
 
-//Copy all files from list
+/**
+ * Copy all files from list
+ * @param ls
+ * @param ttl
+ */
 void mfm_copy_list(mfm_list* ls, long long ttl)
 {
     long long cur = 0;
@@ -242,7 +276,10 @@ void mfm_copy_list(mfm_list* ls, long long ttl)
     }
 }
 
-//Create all destinations directories
+/**
+ * Create all destinations directories
+ * @param ls
+ */
 void mfm_mk_dirs(mfm_list* ls)
 {
     while (ls) {
@@ -251,7 +288,10 @@ void mfm_mk_dirs(mfm_list* ls)
     }
 }
 
-//Destroy the list
+/**
+ * Destroy the list
+ * @param ls
+ */
 void mfm_destroy_list(mfm_list* ls)
 {
     while (ls) {
@@ -263,7 +303,14 @@ void mfm_destroy_list(mfm_list* ls)
     }
 }
 
-//Copy file
+/**
+ * Copy file
+ * @param source
+ * @param dest
+ * @param cur
+ * @param ttl
+ * @return
+ */
 int mfm_copy_file(
     char* source,
     char* dest,
@@ -306,7 +353,11 @@ int mfm_copy_file(
     return 0;
 }
 
-//Show copy progress
+/**
+ * Show copy progress
+ * @param cur
+ * @param ttl
+ */
 void mfm_copy_progress(long long cur, long long ttl)
 {
     static time_t tm = 0;

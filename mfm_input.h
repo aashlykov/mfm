@@ -1,10 +1,12 @@
-#ifndef MFM_INPUT
-#define MFM_INPUT
+#ifndef MFM_INPUT_H
+#define MFM_INPUT_H
 
-//Special keys
+/**
+ * Special keys
+ */
 typedef enum
 {
-    MFM_KEY_NULL   = -1, //For cases when key was not recognized
+    MFM_KEY_NULL   = -1, /**< For cases when key was not recognized */
     MFM_KEY_ESC    =  0,
     MFM_KEY_F1     =  1,
     MFM_KEY_F2     =  2,
@@ -30,15 +32,26 @@ typedef enum
     MFM_KEY_PGDN   = 22
 } mfm_key;
 
-//Read key
+/**
+ * Read key
+ * @param buf Place to put raw key code
+ * @param key Place to put apecial key flag
+ */
 void mfm_read_key(char* buf, mfm_key* key);
 
-//Read the line
+/**
+ * Read the line
+ * @param y Position on screen
+ * @param x
+ * @param w Available length
+ * @param exist Current string to edit - can be NULL
+ * @return
+ */
 char* mfm_read_line(
-    int y, //Position on screen
+    int y,
     int x,
-    int w, //Available length
+    int w,
     unsigned char* exist
 );
 
-#endif
+#endif /* MFM_INPUT_H */

@@ -1,5 +1,5 @@
-#ifndef MFM_GOTO
-#define MFM_GOTO
+#ifndef MFM_GOTO_H
+#define MFM_GOTO_H
 
 /**
  * Go to the some directory
@@ -7,7 +7,11 @@
  */
 void mfm_goto(char** bookmarks);
 
-//Input directory and goto
+/**
+ * Input directory and goto
+ * @param h
+ * @param w
+ */
 void mfm_input_goto(int h, int w);
 
-#endif
+#endif /* MFM_GOTO_H */

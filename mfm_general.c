@@ -20,7 +20,12 @@ char* mfm_subs_single(
 );
 char* mfm_del_percent(char* res, int offset, int* delta);
 
-//Substitute all %f by selected files and %% by %
+/**
+ * Substitute all %f by selected files and %%f by %f
+ * @param tab
+ * @param orig
+ * @return
+ */
 char* mfm_substitute(mfm_tab* tab, char* orig)
 {
     char* files = mfm_all_selected(tab);
@@ -46,7 +51,15 @@ char* mfm_substitute(mfm_tab* tab, char* orig)
     return res;
 }
 
-//Substitute files into res, at dest position
+/**
+ * Substitute files into res, at dest position
+ * @param res
+ * @param offset
+ * @param files
+ * @param files_len
+ * @param delta
+ * @return
+ */
 char* mfm_subs_single(
     char* res,
     int offset,
@@ -62,7 +75,13 @@ char* mfm_subs_single(
     return res;
 }
 
-//Delete % symbol of %%f sequence from
+/**
+ * Delete % symbol of %%f sequence from
+ * @param res
+ * @param offset
+ * @param delta
+ * @return
+ */
 char* mfm_del_percent(char* res, int offset, int* delta)
 {
     *delta = offset + 1;
@@ -74,7 +93,11 @@ char* mfm_del_percent(char* res, int offset, int* delta)
 int mfm_shell_len(char* text);
 void mfm_write_single_item(char* dest, char* item);
 
-//Form the selected items to single string
+/**
+ * Form the selected items to single string
+ * @param tab
+ * @return
+ */
 char* mfm_all_selected(mfm_tab* tab)
 {
     int r_len = 0;
@@ -105,7 +128,11 @@ char* mfm_all_selected(mfm_tab* tab)
     return res;
 }
 
-//Count len of string in the shell command
+/**
+ * Count len of string in the shell command
+ * @param text
+ * @return
+ */
 int mfm_shell_len(char* text)
 {
     int res = 3;
@@ -121,7 +148,11 @@ int mfm_shell_len(char* text)
     return res;
 }
 
-//Write to the buffer single item
+/**
+ * Write to the buffer single item
+ * @param dest
+ * @param item
+ */
 void mfm_write_single_item(char* dest, char* item)
 {
     *dest++ = '"';
@@ -143,7 +174,10 @@ void mfm_write_single_item(char* dest, char* item)
     *dest = ' ';
 }
 
-//Cut the \r\n symbols from string
+/**
+ * Cut the \r\n symbols from string
+ * @param str
+ */
 void mfm_cut_1310(char* str)
 {
     int l = strlen(str);
@@ -154,7 +188,12 @@ void mfm_cut_1310(char* str)
     }
 }
 
-//Compare two key-value pairs for search and delete
+/**
+ * Compare two key-value pairs for search and delete
+ * @param one
+ * @param two
+ * @return
+ */
 int mfm_kv_ins(const void* one, const void* two)
 {
     unsigned char* s1 = ((unsigned char**)one)[0];
@@ -173,8 +212,10 @@ int mfm_kv_ins(const void* one, const void* two)
     return l1 - l2;
 }
 
-//Read config file with actions for files of
-//different types
+/**
+ * Read config file with actions for files of different types
+ * @param f_cmd
+ */
 void mfm_read_config(void** f_cmd)
 {
     //Find the file
@@ -236,7 +277,12 @@ void mfm_read_config(void** f_cmd)
     fclose(f);
 }
 
-//Compare function to get kv
+/**
+ * Compare function to get kv
+ * @param one
+ * @param two
+ * @return
+ */
 int mfm_get_kv(const void* one, const void* two)
 {
     unsigned char* s1 = (unsigned char*)one;
@@ -261,7 +307,11 @@ int mfm_get_kv(const void* one, const void* two)
     return res;
 }
 
-//Get the size of screen
+/**
+ * Get the size of screen
+ * @param h
+ * @param w
+ */
 void mfm_scr_size(int* h, int* w)
 {
     mfm_drain_input();
@@ -269,7 +319,10 @@ void mfm_scr_size(int* h, int* w)
     int res = scanf("\e[%i;%iR", h, w);
 }
 
-//Execute command in shell
+/**
+ * Execute command in shell
+ * @param comm
+ */
 void mfm_command(char* comm)
 {
     int res;
@@ -281,7 +334,11 @@ void mfm_command(char* comm)
     res = system("stty raw;stty -echo");
 }
 
-//Show message in the bot of window
+/**
+ * Show message in the bot of window
+ * @param message
+ * @param delay
+ */
 void mfm_show_message(char* message, int delay)
 {
     int h, w;
@@ -295,7 +352,12 @@ void mfm_show_message(char* message, int delay)
     fflush(stdout);
 }
 
-//Append two paths with /
+/**
+ * Append two paths with /
+ * @param one
+ * @param two
+ * @return
+ */
 char* mfm_append_paths(char* one, char* two)
 {
     char* res = malloc(
@@ -307,7 +369,13 @@ char* mfm_append_paths(char* one, char* two)
     return res;
 }
 
-//Traverse the directory
+/**
+ * Traverse the directory
+ * @param path
+ * @param fn
+ * @param udata
+ * @return
+ */
 int mfm_traverse_directory(
     char* path,
     int (*fn)(char*, struct stat*, void*),
@@ -336,7 +404,11 @@ int mfm_traverse_directory(
     return 0;
 }
 
-//Is it '.' or '..' directory
+/**
+ * Is it '.' or '..' directory
+ * @param path
+ * @return
+ */
 int mfm_dots_dir(char* path)
 {
     char* last = strrchr(path, '/');
@@ -349,7 +421,11 @@ int mfm_dots_dir(char* path)
     return 0;
 }
 
-//Draw help line
+/**
+ * Draw help line
+ * @param h
+ * @param w
+ */
 void mfm_help(int h, int w)
 {
     printf("\e[%i;1H\e[44m\e[2K", h);
@@ -365,7 +441,12 @@ void mfm_help(int h, int w)
     printf("%s", "\e[31mQ\e[37mUIT ");
 }
 
-//Draw the tab numbers
+/**
+ * Draw the tab numbers
+ * @param st
+ * @param h
+ * @param w
+ */
 void mfm_draw_numbers(mfm_state* st, int h, int w)
 {
     int i = 0;
@@ -381,7 +462,10 @@ void mfm_draw_numbers(mfm_state* st, int h, int w)
     printf("%s", "\e[33;41m\e[0K");
 }
 
-//Read the bookmarks
+/**
+ * Read the bookmarks
+ * @return
+ */
 char** mfm_read_bookmarks()
 {
     char* fname = mfm_append_paths(getenv("HOME"), ".local/etc/mfm/bookmarks");
@@ -417,7 +501,13 @@ char** mfm_read_bookmarks()
     return res;
 }
 
-//Delete the item
+/**
+ * Delete the item
+ * @param path
+ * @param st
+ * @param udata
+ * @return
+ */
 int mfm_delete_item(char* path, struct stat* st, void* udata)
 {
     if (mfm_dots_dir(path)) {
@@ -430,7 +520,12 @@ int mfm_delete_item(char* path, struct stat* st, void* udata)
     return 0;
 }
 
-//Travers all selected items, except the current tab
+/**
+ * Travers all selected items, except the current tab
+ * @param st
+ * @param cb
+ * @param udata
+ */
 void mfm_travers_all_selected(
     mfm_state* st,
     void (*cb)(mfm_tab*, mfm_tab_item*, void*),
@@ -449,17 +544,25 @@ void mfm_travers_all_selected(
     }
 }
 
-//Create the empty directory
+/**
+ * Create the empty directory
+ * @param name
+ * @return
+ */
 int mfm_mkdir(char* name)
 {
-    mkdir(name,
+    return mkdir(name,
         S_IRUSR | S_IWUSR | S_IXUSR |
         S_IRGRP | S_IXGRP |
         S_IROTH | S_IXOTH
     );
 }
 
-//Get the text presentation of size in bytes
+/**
+ * Get the text presentation of size in bytes
+ * @param bytes
+ * @param buf
+ */
 void mfm_get_size_text(long long bytes, char* buf)
 {
     long long gb = 1 << 30, mb = 1 << 20, kb = 1 << 10;

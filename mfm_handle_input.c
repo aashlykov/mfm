@@ -16,7 +16,10 @@
 #include "mfm_copy.h"
 #include "mfm_goto.h"
 
-//Mark the menu element
+/**
+ * Mark the menu element
+ * @param tab
+ */
 void mfm_mark(mfm_tab* tab)
 {
     //Current active element
@@ -38,7 +41,10 @@ void mfm_mark(mfm_tab* tab)
     tab->act++;
 }
 
-//Run shell
+/**
+ * Run shell
+ * @param st
+ */
 void mfm_run_shell(mfm_state* st)
 {
     //Current menu
@@ -59,6 +65,7 @@ void mfm_run_shell(mfm_state* st)
             sum += strlen(tab->items[i].text) + 1;
         }
     }
+
     //Put data to the memory
     if (sum) {
         tmp = malloc(sum);
@@ -86,10 +93,14 @@ void mfm_run_shell(mfm_state* st)
     setenv("FF", "", 1);
 }
 
-//Action on file:
-// - enter to the directory
-// - apply action to the file
-// - execute executable
+/**
+ * Action on file:
+ *  - enter to the directory
+ *  - apply action to the file
+ *  - execute executable
+ * @param tab
+ * @param f_cmd
+ */
 void mfm_action(mfm_tab* tab, void** f_cmd)
 {
     int act = tab->act;
@@ -130,7 +141,12 @@ void mfm_action(mfm_tab* tab, void** f_cmd)
     }
 }
 
-//Rename the file
+/**
+ * Rename the file
+ * @param tab
+ * @param h
+ * @param w
+ */
 void mfm_rename(mfm_tab* tab, int h, int w)
 {
     int act = tab->act;
@@ -150,7 +166,12 @@ void mfm_rename(mfm_tab* tab, int h, int w)
     free(new_name);
 }
 
-//Delete selected or under-cursor file or directory
+/**
+ * Delete selected or under-cursor file or directory
+ * @param tab
+ * @param h
+ * @param w
+ */
 void mfm_delete(mfm_tab* tab, int h, int w)
 {
     int act = tab->act;
@@ -204,7 +225,10 @@ void mfm_delete(mfm_tab* tab, int h, int w)
     }
 }
 
-//Create the new tab
+/**
+ * Create the new tab
+ * @param st
+ */
 void mfm_new_tab(mfm_state* st)
 {
     if (st->len == 10) {
@@ -221,7 +245,11 @@ void mfm_new_tab(mfm_state* st)
     st->cur = st->len - 1;
 }
 
-//Close current tab
+/**
+ * Close current tab
+ * @param st
+ * @return
+ */
 int mfm_close_tab(mfm_state* st)
 {
     int i = st->cur;
@@ -243,7 +271,13 @@ int mfm_close_tab(mfm_state* st)
     return 0;
 }
 
-//Execute single command
+/**
+ * Execute single command
+ * @param tab
+ * @param h
+ * @param w
+ * @param delay
+ */
 void mfm_exec_single(
     mfm_tab* tab,
     int h,
@@ -266,7 +300,6 @@ void mfm_exec_single(
     }
 }
 
-//Handle the special key
 int mfm_handle_key(
     mfm_key key,
     mfm_state* st,
@@ -274,7 +307,13 @@ int mfm_handle_key(
     int w
 );
 
-//Handle user input
+/**
+ * Handle user input
+ * @param st
+ * @param h
+ * @param w
+ * @return
+ */
 int mfm_handle_input(
     mfm_state* st,
     int h,
@@ -378,7 +417,14 @@ int mfm_handle_input(
     return 0;
 }
 
-//Handle the special key
+/**
+ * Handle the special key
+ * @param key
+ * @param st
+ * @param h
+ * @param w
+ * @return
+ */
 int mfm_handle_key(
     mfm_key key,
     mfm_state* st,

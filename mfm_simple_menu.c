@@ -4,8 +4,11 @@
 #include "mfm_general.h"
 #include "mfm_simple_menu.h"
 
-
-//Run simple menu
+/**
+ * Run simple menu
+ * @param variants for selecting
+ * @return
+ */
 int mfm_simple_menu(char** variants)
 {
     //Select input directory or from bookmarks

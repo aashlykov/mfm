@@ -11,14 +11,18 @@
 #include "mfm_input.h"
 #include "mfm_general.h"
 
-//Key and his code
+/**
+ * Key and his code
+ */
 typedef struct
 {
     unsigned char code[8];
     mfm_key key;
 } mfm_key_map_element;
 
-//Map for all keys
+/**
+ * Map for all keys
+ */
 mfm_key_map_element mfm_key_map[] = {
     //Xterm key codes
     {
@@ -116,7 +120,11 @@ mfm_key_map_element mfm_key_map[] = {
     }
 };
 
-//Read key
+/**
+ * Read key
+ * @param buf Place to put raw key code
+ * @param key Place to put apecial key flag
+ */
 void mfm_read_key(char* buf, mfm_key* key)
 {
     memset(buf, '\0', 8);
@@ -152,21 +160,33 @@ void mfm_read_key(char* buf, mfm_key* key)
     }
 }
 
-//Read existing utf-8 string
+/**
+ * Read existing utf-8 string
+ * @param exist String to be parsed
+ * @param str   Place to put results
+ * @param w     Available length
+ */
 void mfm_read_exist(
-    unsigned char* exist, //String to be parsed
-    char** str, //Place to put results
-    int w //Available length
+    unsigned char* exist,
+    char** str,
+    int w
 );
 
 int mfm_read_line_sp_keys(mfm_key key, char** str, int* cur, int* curr);
 
-//Read the line
+/**
+ * Read the line
+ * @param y Position on screen
+ * @param x
+ * @param w Available length
+ * @param exist Previous string
+ * @return
+ */
 char* mfm_read_line(
-    int y, //Position on screen
+    int y,
     int x,
-    int w, //Available length
-    unsigned char* exist //Previous string
+    int w,
+    unsigned char* exist
 ) {
     //Buffer for multibyte keys
     unsigned char buf[8];
@@ -241,7 +261,6 @@ char* mfm_read_line(
 
     printf("%s", "\e[?25l");
 
-    //return result
     //Count the total length
     int len = 0;
     for (char** st = str; *st; st++) {
@@ -259,11 +278,16 @@ char* mfm_read_line(
     return res;
 }
 
-//Read existing utf-8 string
+/**
+ * Read existing utf-8 string
+ * @param exist String to be parsed
+ * @param str   Place to put results
+ * @param w     Available length
+ */
 void mfm_read_exist(
-    unsigned char* exist, //String to be parsed
-    char** str, //Place to put results
-    int w //Available length
+    unsigned char* exist,
+    char** str,
+    int w
 ) {
     if (!exist) {
         return;
@@ -286,6 +310,14 @@ void mfm_read_exist(
     }
 }
 
+/**
+ * Handle special key pressing while input line
+ * @param key
+ * @param str
+ * @param cur
+ * @param curr
+ * @return
+ */
 int mfm_read_line_sp_keys(mfm_key key, char** str, int* cur, int* curr)
 {
     switch (key) {

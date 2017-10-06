@@ -15,7 +15,13 @@
 #include "mfm_general.h"
 #include "mfm_tab.h"
 
-//Is file executable?
+/**
+ * Is file executable?
+ * @param fname Target file
+ * @param st    Global state
+ * @param f_cmd Commands for file types
+ * @return
+ */
 mfm_tab_item_props mfm_is_exec(
     char* fname,
     struct stat* st,
@@ -62,7 +68,12 @@ mfm_tab_item_props mfm_is_exec(
     return 0;
 }
 
-//Comparation function for sorting entries in directory
+/**
+ * Comparation function for sorting entries in directory
+ * @param one
+ * @param two
+ * @return
+ */
 int mfm_cmp_tab_items(const void* one, const void* two)
 {
     printf("%s\n", "2");
@@ -83,7 +94,10 @@ int mfm_cmp_tab_items(const void* one, const void* two)
     );
 }
 
-//Destroy the tab
+/**
+ * Destroy the tab
+ * @param tab
+ */
 void mfm_destroy_tab(mfm_tab* tab)
 {
     if (!tab) {
@@ -101,13 +115,16 @@ void mfm_destroy_tab(mfm_tab* tab)
     free(tab->items);
 }
 
-//Callback for directory traversing
+/**
+ * User data for directory traverse callback
+ */
 typedef struct
 {
     mfm_tab* tab;
     int temp_count;
     void** f_cmd;
 } mfm_init_tab_item_udata;
+
 int mfm_init_tab_item(char* name, struct stat* st, void* udata);
 
 //Create the tab
@@ -167,7 +184,13 @@ int mfm_init_tab(mfm_tab* tab, void** f_cmd)
     return 0;
 }
 
-//Callback for directory traversing
+/**
+ * Callback for directory traversing
+ * @param name
+ * @param st
+ * @param udata
+ * @return
+ */
 int mfm_init_tab_item(char* name, struct stat* st, void* udata)
 {
     mfm_tab* tab = (*(mfm_init_tab_item_udata*)udata).tab;
@@ -212,7 +235,12 @@ int mfm_init_tab_item(char* name, struct stat* st, void* udata)
     return 0;
 }
 
-//Draw the current tab content
+/**
+ * Draw the current tab content
+ * @param tab
+ * @param h
+ * @param w
+ */
 void mfm_draw_tab(
     mfm_tab* tab, //Menu to drawing
     int h,         //Screen size
@@ -266,7 +294,12 @@ void mfm_draw_tab(
    );
 }
 
-//Correct tab params
+/**
+ * Correct tab params
+ * @param tab
+ * @param h
+ * @param w
+ */
 void mfm_correct_tab(mfm_tab* tab, int h, int w)
 {
     if (tab->act < 0) {
@@ -274,7 +307,7 @@ void mfm_correct_tab(mfm_tab* tab, int h, int w)
     } else if (tab->act > tab->len - 1) {
         tab->act = tab->len - 1;
     }
-    if (tab->pos_view > tab->act){
+    if (tab->pos_view > tab->act) {
         tab->pos_view = tab->act;
         return;
     }

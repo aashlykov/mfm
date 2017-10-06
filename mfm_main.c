@@ -13,6 +13,12 @@
 
 int mfm_main(mfm_state* st);
 
+/**
+ * Entry point of application
+ * @param argc
+ * @param argv
+ * @return
+ */
 int main(int argc, char** argv)
 {
     //Global state
@@ -22,7 +28,7 @@ int main(int argc, char** argv)
     st.f_cmd = NULL;
     mfm_read_config(&(st.f_cmd));
     st.bookmarks = mfm_read_bookmarks();
-    
+
     //If there is no params - init current directory
     if (argc == 1) {
         st.tabs = calloc(sizeof(mfm_tab), 1);
@@ -37,7 +43,7 @@ int main(int argc, char** argv)
             mfm_init_tab(st.tabs + i - 1, &(st.f_cmd));
         }
     }
-    
+
     st.cur = 0;
 
     printf("%s", "\e[1m\e[?25l");
@@ -49,7 +55,11 @@ int main(int argc, char** argv)
     return 0;
 }
 
-//Main loop
+/**
+ * Main loop
+ * @param st
+ * @return
+ */
 int mfm_main(mfm_state* st)
 {
     //Get the screen size

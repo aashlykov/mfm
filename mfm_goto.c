@@ -7,10 +7,12 @@
 #include "mfm_input.h"
 #include "mfm_simple_menu.h"
 
-//Input directory and goto
 void mfm_input_goto(int h, int w);
 
-//Goto to the something directory
+/**
+ * Goto to the something directory
+ * @param bookmarks
+ */
 void mfm_goto(char** bookmarks)
 {
     //Draw the head
@@ -34,7 +36,11 @@ void mfm_goto(char** bookmarks)
     int res = chdir(bookmarks[choice]);
 }
 
-//Input directory and goto
+/**
+ * Input directory and goto
+ * @param h
+ * @param w
+ */
 void mfm_input_goto(int h, int w)
 {
     printf("\e[%i;1H\e[33;41m", h);

@@ -1,7 +1,11 @@
-#ifndef MFM_SIMPLE_MENU
-#define MFM_SIMPLE_MENU
+#ifndef MFM_SIMPLE_MENU_H
+#define MFM_SIMPLE_MENU_H
 
-//Run simple menu
+/**
+ * Run simple menu
+ * @param variants for selecting
+ * @return
+ */
 int mfm_simple_menu(char** variants);
 
-#endif
+#endif /* MFM_SIMPLE_MENU_H */
