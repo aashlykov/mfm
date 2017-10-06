@@ -235,7 +235,7 @@ void mfm_draw_tab(
         tab_pos++, scr_pos++
     ) {
         if (off != !(tab->items[tab_pos].props & MFM_DIR)) {
-            printf("\e[22m\e[45m\e[%i;1H\e[2K\e[1m", scr_pos);
+            printf("\e[45m\e[%i;1H\e[2K", scr_pos);
         }
         off = !(tab->items[tab_pos].props & MFM_DIR);
         printf(
@@ -248,12 +248,13 @@ void mfm_draw_tab(
     }
 
     //Empty lines
-    printf("%s", "\e[40m");
-    for (; scr_pos <= h - 2; scr_pos++) {
-        printf("\e[%i;1H\e[2K", scr_pos + off);
-    }
     if (!off) {
-        printf("\e[40m\e[%i;1H\e[2K", h-1);
+        printf("\e[45m\e[%i;1H\e[2K", scr_pos);
+    }
+    printf("%s", "\e[40m");
+    scr_pos++;
+    for (; scr_pos <= h - 1; scr_pos++) {
+        printf("\e[%i;1H\e[2K", scr_pos);
     }
 
     //Show current position in menu

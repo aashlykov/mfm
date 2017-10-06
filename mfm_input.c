@@ -5,11 +5,11 @@
 #include <errno.h>
 #include <error.h>
 #include <unistd.h>
-#include <fcntl.h>
 #include <sys/types.h>
 #include <dirent.h>
 
 #include "mfm_input.h"
+#include "mfm_general.h"
 
 //Key and his code
 typedef struct
@@ -125,11 +125,14 @@ void mfm_read_key(char* buf, mfm_key* key)
     //Let's go
     fflush(stdout);
     ssize_t res = read(0, buf, 8);
+    mfm_drain_input();
+
+    //Return result if it's not a code of special key
     if (buf[0] != 27) {
         return;
     }
 
-    //Clear input stream
+    //Clear escape sequence
     int f = 0;
     for (int i = 1; i <= 8; i++) {
         if (buf[i] == '\e') {
@@ -139,11 +142,7 @@ void mfm_read_key(char* buf, mfm_key* key)
             buf[i] = '\0';
         }
     }
-    char c;
-    int fs = fcntl(0, F_GETFL, 0);
-    fcntl(0, F_SETFL, fs | O_NONBLOCK);
-    while (read(0, &c, 1) > 0);
-    fcntl(0, F_SETFL, fs);
+
 
     //Try to detect special key
     for (int i = 0; i < 30; i++) {

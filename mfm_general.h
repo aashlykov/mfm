@@ -145,4 +145,10 @@ void mfm_travers_all_selected(
  */
 void mfm_get_size_text(long long bytes, char* buf);
 
+/**
+ * Drain all data at standard input
+ */
+void mfm_drain_input();
+
 #endif /* MFM_GENERAL_H */
+

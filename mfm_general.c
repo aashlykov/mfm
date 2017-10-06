@@ -4,6 +4,8 @@
 #include <dirent.h>
 #include <search.h>
 #include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 #include "mfm_general.h"
 #include "mfm_input.h"
@@ -23,10 +25,10 @@ char* mfm_substitute(mfm_tab* tab, char* orig)
 {
     char* files = mfm_all_selected(tab);
     int files_len = strlen(files);
-    
+
     char* res = malloc(strlen(orig) + 1);
     strcpy(res, orig);
-    
+
     int delta = 0;
     char* dest;
     while (dest = strstr(res + delta, "%f")) {
@@ -38,9 +40,9 @@ char* mfm_substitute(mfm_tab* tab, char* orig)
             res = mfm_subs_single(res, dest - res, files, files_len, &delta);
         }
     }
-    
+
     free(files);
-    
+
     return res;
 }
 
@@ -60,7 +62,7 @@ char* mfm_subs_single(
     return res;
 }
 
-//Delete % symbol of %%f sequence from 
+//Delete % symbol of %%f sequence from
 char* mfm_del_percent(char* res, int offset, int* delta)
 {
     *delta = offset + 1;
@@ -97,9 +99,9 @@ char* mfm_all_selected(mfm_tab* tab)
         res = malloc(r_len);
         mfm_write_single_item(res, text);
     }
-    
+
     res[r_len] = '\0';
-    
+
     return res;
 }
 
@@ -262,7 +264,8 @@ int mfm_get_kv(const void* one, const void* two)
 //Get the size of screen
 void mfm_scr_size(int* h, int* w)
 {
-    printf("%s", "\e[100;500H\e[6n");
+    mfm_drain_input();
+    printf("%s", "\e[1000;5000H\e[6n");
     int res = scanf("\e[%i;%iR", h, w);
 }
 
@@ -469,4 +472,16 @@ void mfm_get_size_text(long long bytes, char* buf)
     } else { //B
         sprintf(buf, "%i b", (int)(bytes));
     }
+}
+
+/**
+ * Drain all data at standard input
+ */
+void mfm_drain_input()
+{
+    char c;
+    int fs = fcntl(0, F_GETFL, 0);
+    fcntl(0, F_SETFL, fs | O_NONBLOCK);
+    while (read(0, &c, 1) > 0);
+    fcntl(0, F_SETFL, fs);
 }
