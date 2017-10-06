@@ -48,9 +48,14 @@ int main(int argc, char** argv)
 
     printf("%s", "\e[1m\e[?25l");
     int res = system("stty raw;stty -echo");
-    while (!mfm_main(&st));
+    int exit_code;
+    while (!(exit_code = mfm_main(&st)));
     printf("%s", "\e[0m\e[?25h\e[2J\e[1;1H");
     res = system("stty sane;stty echo");
+
+    if (exit_code == 2) {
+        printf("%s", "Screen size is lesser than 80x24\n");
+    }
 
     return 0;
 }
@@ -65,6 +70,10 @@ int mfm_main(mfm_state* st)
     //Get the screen size
     int h, w;
     mfm_scr_size(&h, &w);
+
+    if (w < 80 || h < 24) {
+        return 2;
+    }
 
     //Draw current tab
     mfm_tab* tab = st->tabs + st->cur;
