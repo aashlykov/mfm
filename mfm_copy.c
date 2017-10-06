@@ -337,9 +337,10 @@ int mfm_copy_file(
     }
 
     //Main cycle of coping
-    char* buff = malloc(512);
+    int bs = st.st_blksize;
+    char* buff = malloc(bs);
     while (!feof(inp)) {
-        int readed = fread(buff, 1, 512, inp);
+        int readed = fread(buff, 1, bs, inp);
         fwrite(buff, 1, readed, otp);
         *cur += readed;
         mfm_copy_progress(*cur, ttl);

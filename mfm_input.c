@@ -99,8 +99,7 @@ mfm_key_map_element mfm_key_map[] = {
     {
         {27, 91, 72, 0, 0, 0, 0, 0},
         MFM_KEY_HOME,
-    },
-    {
+    }, {
         {27, 91, 70, 0, 0, 0, 0, 0},
         MFM_KEY_END,
     },
