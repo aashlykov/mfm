@@ -64,8 +64,24 @@ void mfm_copy(mfm_state* st)
     //Do the operations
     struct statvfs sv;
     statvfs(udata.dest, &sv);
-    if (udata.ondisk > sv.f_bsize * sv.f_bfree) {
+    unsigned long long free_bytes = sv.f_bsize * sv.f_bfree;
+    if (udata.ondisk > free_bytes) {
         mfm_show_message("Not enough free space", 1);
+        char od[50], fr[50];
+        mfm_get_size_text(udata.ondisk, od);
+        mfm_get_size_text(free_bytes, fr);
+        char template[][15] = {
+            "Required: %s",
+            "Available: %s"
+        };
+        char *message = malloc(strlen(template[0]) - 2 + strlen(od));
+        sprintf(message, template[0], od);
+        mfm_show_message(message, 1);
+        free(message);
+        message = malloc(strlen(template[1]) - 2 + strlen(fr));
+        sprintf(message, template[1], fr);
+        mfm_show_message(message, 1);
+        free(message);
     } else {
         mfm_mk_dirs(udata.hd);
         mfm_copy_list(udata.hf, udata.real);
@@ -115,7 +131,7 @@ int mfm_copy_cb(char* name, struct stat* st, void* udata)
         name + ((mfm_copy_item_udata*)udata)->slen
     );
     tmp->next = NULL;
-    ((mfm_copy_item_udata*)udata)->ondisk += st->st_blksize * st->st_blocks;
+    ((mfm_copy_item_udata*)udata)->ondisk += 512 * st->st_blocks;
     if (S_ISDIR(st->st_mode)) {
         if (((mfm_copy_item_udata*)udata)->hd == NULL) {
             ((mfm_copy_item_udata*)udata)->hd = tmp;
@@ -165,8 +181,24 @@ void mfm_move(mfm_state* st)
     //Do the operations
     struct statvfs sv;
     statvfs(udata.cu.dest, &sv);
-    if (udata.cu.ondisk > sv.f_bsize * sv.f_bfree) {
+    unsigned long long free_bytes = sv.f_bsize * sv.f_bfree;
+    if (udata.cu.ondisk > free_bytes) {
         mfm_show_message("Not enough free space", 1);
+        char od[50], fr[50];
+        mfm_get_size_text(udata.cu.ondisk, od);
+        mfm_get_size_text(free_bytes, fr);
+        char template[][15] = {
+            "Required: %s",
+            "Available: %s"
+        };
+        char *message = malloc(strlen(template[0]) - 2 + strlen(od));
+        sprintf(message, template[0], od);
+        mfm_show_message(message, 1);
+        free(message);
+        message = malloc(strlen(template[1]) - 2 + strlen(fr));
+        sprintf(message, template[1], fr);
+        mfm_show_message(message, 1);
+        free(message);
     } else {
         mfm_mk_dirs(udata.cu.hd);
         mfm_copy_list(udata.cu.hf, udata.cu.real);
