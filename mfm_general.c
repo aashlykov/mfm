@@ -119,6 +119,7 @@ char* mfm_all_selected(mfm_tab* tab)
     if (!r_len) {
         char* text = tab->items[tab->act].text;
         r_len = mfm_shell_len(text);
+        free(res);
         res = malloc(r_len);
         mfm_write_single_item(res, text);
     }
