@@ -137,8 +137,8 @@ char* mfm_all_selected(mfm_tab* tab)
 int mfm_shell_len(char* text)
 {
     int res = 3;
-    for (int i = 0; text[i]; i++) {
-        switch (text[i]) {
+    for (char* c = text; *c; c++) {
+        switch (*c) {
         case '\\':
         case '"':
             res += 2;
