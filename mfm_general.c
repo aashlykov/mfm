@@ -91,7 +91,7 @@ char* mfm_del_percent(char* res, int offset, int* delta)
 }
 
 int mfm_shell_len(char* text);
-void mfm_write_single_item(char* dest, char* item);
+char* mfm_write_single_item(char* dest, char* item);
 
 /**
  * Form the selected items to single string
@@ -101,31 +101,30 @@ void mfm_write_single_item(char* dest, char* item);
 char* mfm_all_selected(mfm_tab* tab)
 {
     int r_len = 0;
-    char* res = malloc(r_len + 1);
-    char* cur;
-    res[0] = '\0';
+    
+    //Count the total len
     for (int i = 0; i < tab->len; i++) {
-        mfm_tab_item* it = tab->items + i;
-        if (!(it->props & MFM_SEL)) {
-            continue;
+        if (tab->items[i].props & MFM_SEL) {
+            r_len += mfm_shell_len(tab->items[i].text);
         }
-        char* text = it->text;
-        int delta = mfm_shell_len(text);
-        res = realloc(res, r_len + delta);
-        cur = res + r_len;
-        r_len += delta;
-        mfm_write_single_item(cur, text);
     }
     if (!r_len) {
-        char* text = tab->items[tab->act].text;
-        r_len = mfm_shell_len(text);
-        free(res);
-        res = malloc(r_len);
-        mfm_write_single_item(res, text);
+        r_len += mfm_shell_len(tab->items[tab->act].text);
     }
-
+    
+    //Write the result
+    char* res = malloc(r_len);
+    char* cur = res;
+    for (int i = 0; i < tab->len; i++) {
+        if (tab->items[i].props & MFM_SEL) {
+            cur = mfm_write_single_item(cur, tab->items[i].text);
+        }
+    }
+    if (cur == res) {
+        cur = mfm_write_single_item(cur, tab->items[tab->act].text);
+    }
+    
     res[r_len] = '\0';
-
     return res;
 }
 
@@ -153,8 +152,9 @@ int mfm_shell_len(char* text)
  * Write to the buffer single item
  * @param dest
  * @param item
+ * @return Current position
  */
-void mfm_write_single_item(char* dest, char* item)
+char* mfm_write_single_item(char* dest, char* item)
 {
     *dest++ = '"';
     for (char* c = item; *c; c++) {
@@ -172,7 +172,8 @@ void mfm_write_single_item(char* dest, char* item)
         }
     }
     *dest++ = '"';
-    *dest = ' ';
+    *dest++ = ' ';
+    return dest;
 }
 
 /**
