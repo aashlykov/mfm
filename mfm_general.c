@@ -11,14 +11,8 @@
 #include "mfm_input.h"
 
 char* mfm_all_selected(mfm_tab* tab);
-char* mfm_subs_single(
-    char* res,
-    int offset,
-    char* files,
-    int files_len,
-    int* delta
-);
-char* mfm_del_percent(char* res, int offset, int* delta);
+int mfm_subs_count(char* orig, int files_len);
+void mfm_subs_write(char* dest, char* orig, char* files);
 
 /**
  * Substitute all %f by selected files and %%f by %f
@@ -31,68 +25,16 @@ char* mfm_substitute(mfm_tab* tab, char* orig)
     char* files = mfm_all_selected(tab);
     int files_len = strlen(files);
 
-    char* res = malloc(strlen(orig) + 1);
-    strcpy(res, orig);
-
-    int delta = 0;
-    char* dest;
-    while (dest = strstr(res + delta, "%f")) {
-        if (dest == res) {
-            res = mfm_subs_single(res, dest - res, files, files_len, &delta);
-        } else if (dest[-1] == '%') {
-            res = mfm_del_percent(res, dest - res, &delta);
-        } else {
-            res = mfm_subs_single(res, dest - res, files, files_len, &delta);
-        }
-    }
+    char* res = malloc(mfm_subs_count(orig, files_len) + 1);
+    mfm_subs_write(res, orig, files);
 
     free(files);
 
     return res;
 }
 
-/**
- * Substitute files into res, at dest position
- * @param res
- * @param offset
- * @param files
- * @param files_len
- * @param delta
- * @return
- */
-char* mfm_subs_single(
-    char* res,
-    int offset,
-    char* files,
-    int files_len,
-    int* delta
-) {
-    *delta = offset + files_len;
-    int res_len = strlen(res);
-    res = realloc(res, res_len + files_len - 1);
-    memmove(res + offset + files_len, res + offset + 2, res_len - offset - 1);
-    memcpy(res + offset, files, files_len);
-    return res;
-}
-
-/**
- * Delete % symbol of %%f sequence from
- * @param res
- * @param offset
- * @param delta
- * @return
- */
-char* mfm_del_percent(char* res, int offset, int* delta)
-{
-    *delta = offset + 1;
-    int res_len = strlen(res);
-    memmove(res + offset - 1, res + offset, res_len - offset + 1);
-    return realloc(res, res_len - 1);
-}
-
 int mfm_shell_len(char* text);
 char* mfm_write_single_item(char* dest, char* item);
-
 /**
  * Form the selected items to single string
  * @param tab
@@ -125,6 +67,7 @@ char* mfm_all_selected(mfm_tab* tab)
     }
     
     res[r_len] = '\0';
+    
     return res;
 }
 
@@ -174,6 +117,82 @@ char* mfm_write_single_item(char* dest, char* item)
     *dest++ = '"';
     *dest++ = ' ';
     return dest;
+}
+
+/**
+ * Count total len
+ * @param orig
+ * @param files_len
+ * @return 
+ */
+int mfm_subs_count(char* orig, int files_len)
+{
+    int res = 0;
+    for (char* c = orig;;) {
+        if (!c[0]) {
+            break;
+        }
+        if (!c[1]) {
+            res++;
+            break;
+        }
+        if (c[0] == '%' && c[1] == 'f') {
+            res += files_len;
+            c += 2;
+            continue;
+        }
+        if (!c[2]) {
+            res++;
+            c++;
+            continue;
+        }
+        if (c[0] == '%' && c[1] == '%' && c[2] == 'f') {
+            res += 2;
+            c += 3;
+            continue;
+        }
+        res++;
+        c++;
+    }
+    return res;
+}
+
+/**
+ * Write data to the format string
+ * @param dest
+ * @param orig
+ * @param files
+ */
+void mfm_subs_write(char* dest, char* orig, char* files)
+{
+    int flen = strlen(files);
+    for (char* c = orig;;) {
+        if (!c[0]) {
+            *dest = '\0';
+            break;
+        }
+        if (!c[1]) {
+            *dest++ = *c++;
+            continue;
+        }
+        if (c[0] == '%' && c[1] == 'f') {
+            c += 2;
+            strcpy(dest, files);
+            dest += flen;
+            continue;
+        }
+        if (!c[2]) {
+            *dest++ = *c++;
+            continue;
+        }
+        if (c[0] == '%' && c[1] == '%' && c[2] == 'f') {
+            c += 3;
+            *dest++ = '%';
+            *dest++ = 'f';
+            continue;
+        }
+        *dest++ = *c++;
+    }
 }
 
 /**
