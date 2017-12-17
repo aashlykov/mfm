@@ -127,32 +127,17 @@ char* mfm_write_single_item(char* dest, char* item)
  */
 int mfm_subs_count(char* orig, int files_len)
 {
-    int res = 0;
-    for (char* c = orig;;) {
-        if (!c[0]) {
-            break;
+    int res = strlen(orig);
+    char* cur = orig;
+    while (cur = strstr(cur, "%f")) {
+        if (cur == orig) {
+            res = res - 2 + files_len;
+        } else if (cur[-1] == '%') {
+            res--;
+        } else {
+            res = res - 2 + files_len;
         }
-        if (!c[1]) {
-            res++;
-            break;
-        }
-        if (c[0] == '%' && c[1] == 'f') {
-            res += files_len;
-            c += 2;
-            continue;
-        }
-        if (!c[2]) {
-            res++;
-            c++;
-            continue;
-        }
-        if (c[0] == '%' && c[1] == '%' && c[2] == 'f') {
-            res += 2;
-            c += 3;
-            continue;
-        }
-        res++;
-        c++;
+        cur += 2;
     }
     return res;
 }
@@ -165,34 +150,29 @@ int mfm_subs_count(char* orig, int files_len)
  */
 void mfm_subs_write(char* dest, char* orig, char* files)
 {
-    int flen = strlen(files);
-    for (char* c = orig;;) {
-        if (!c[0]) {
-            *dest = '\0';
-            break;
-        }
-        if (!c[1]) {
-            *dest++ = *c++;
-            continue;
-        }
-        if (c[0] == '%' && c[1] == 'f') {
-            c += 2;
+    int files_len = strlen(files);
+    char* prev = orig;
+    char* next;
+    while (next = strstr(prev, "%f")) {
+        if (next == orig) {
             strcpy(dest, files);
-            dest += flen;
-            continue;
-        }
-        if (!c[2]) {
-            *dest++ = *c++;
-            continue;
-        }
-        if (c[0] == '%' && c[1] == '%' && c[2] == 'f') {
-            c += 3;
+            dest += files_len;
+        } else if (next[-1] == '%') {
+            int delta = next - 1 - prev;
+            memcpy(dest, prev, delta);
+            dest += delta;
             *dest++ = '%';
             *dest++ = 'f';
-            continue;
+        } else {
+            int delta = next - prev;
+            memcpy(dest, prev, delta);
+            dest += delta;
+            strcpy(dest, files);
+            dest += files_len;
         }
-        *dest++ = *c++;
+        prev = next + 2;
     }
+    strcpy(dest, prev);
 }
 
 /**
