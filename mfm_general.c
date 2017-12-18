@@ -43,7 +43,7 @@ char* mfm_write_single_item(char* dest, char* item);
 char* mfm_all_selected(mfm_tab* tab)
 {
     int r_len = 0;
-    
+
     //Count the total len
     for (int i = 0; i < tab->len; i++) {
         if (tab->items[i].props & MFM_SEL) {
@@ -53,7 +53,7 @@ char* mfm_all_selected(mfm_tab* tab)
     if (!r_len) {
         r_len += mfm_shell_len(tab->items[tab->act].text);
     }
-    
+
     //Write the result
     char* res = malloc(r_len);
     char* cur = res;
@@ -65,9 +65,9 @@ char* mfm_all_selected(mfm_tab* tab)
     if (cur == res) {
         cur = mfm_write_single_item(cur, tab->items[tab->act].text);
     }
-    
+
     res[r_len] = '\0';
-    
+
     return res;
 }
 
@@ -123,7 +123,7 @@ char* mfm_write_single_item(char* dest, char* item)
  * Count total len
  * @param orig
  * @param files_len
- * @return 
+ * @return
  */
 int mfm_subs_count(char* orig, int files_len)
 {
@@ -328,7 +328,6 @@ void mfm_command(char* comm)
 {
     int res;
     printf("%s", "\ec");
-    fflush(stdout);
     res = system("stty sane;stty echo");
     res = system(comm);
     printf("%s", "\e[1m\e[?25l");
@@ -350,7 +349,6 @@ void mfm_show_message(char* message, int delay)
     if (delay) {
         mfm_read_key(buf, &key);
     }
-    fflush(stdout);
 }
 
 /**

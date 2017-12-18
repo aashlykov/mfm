@@ -139,7 +139,6 @@ void mfm_read_key(char* buf, mfm_key* key)
     *key = MFM_KEY_NULL;
 
     //Let's go
-    fflush(stdout);
     mfm_drain_input();
     ssize_t res = read(0, buf, 8);
     mfm_drain_input();

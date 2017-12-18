@@ -46,6 +46,9 @@ int main(int argc, char** argv)
 
     st.cur = 0;
 
+    setvbuf(stdout, NULL, _IONBF, 0);
+    setvbuf(stdin, NULL, _IONBF, 0);
+
     printf("%s", "\e[1m\e[?25l");
     int res = system("stty raw;stty -echo");
     int exit_code;
@@ -87,9 +90,6 @@ int mfm_main(mfm_state* st)
     //Draw tabs numbers
     mfm_draw_numbers(st, h, w);
 
-    //Flush output
-    fflush(stdout);
-
     //Read and handle input
-    return mfm_handle_input(st, h, w);
+    return mfm_handle_input(st);
 }

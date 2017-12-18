@@ -315,9 +315,7 @@ int mfm_handle_key(
  * @return
  */
 int mfm_handle_input(
-    mfm_state* st,
-    int h,
-    int w
+    mfm_state* st
 ) {
     //Current menu
     mfm_tab* tab = st->tabs + st->cur;
@@ -329,6 +327,10 @@ int mfm_handle_input(
     char buf[8];
     mfm_key key;
     mfm_read_key(buf, &key);
+
+    //Get the screen size
+    int h, w;
+    mfm_scr_size(&h, &w);
 
     //Is it necessary to reinit tab
     int ri = 0;

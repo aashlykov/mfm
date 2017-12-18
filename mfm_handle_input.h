@@ -10,6 +10,6 @@
  * @param w
  * @return
  */
-int mfm_handle_input(mfm_state* st, int h, int w);
+int mfm_handle_input(mfm_state* st);
 
 #endif /* MFM_HANDLE_INPUT_H */

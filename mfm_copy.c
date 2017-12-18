@@ -382,7 +382,6 @@ int mfm_copy_file(
     //finish work
     fclose(inp);
     fclose(otp);
-    fflush(stdin);
     return 0;
 }
 
