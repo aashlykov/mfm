@@ -321,6 +321,7 @@ void mfm_scr_size(int* h, int* w)
     mfm_drain_input();
     printf("%s", "\e[1000;5000H\e[6n");
     int res = scanf("\e[%i;%iR", h, w);
+    mfm_drain_input();
 }
 
 /**
