@@ -84,8 +84,10 @@ int mfm_shell_len(char* text)
         case '\\':
         case '"':
             res += 2;
+            break;
         default:
             res++;
+            break;
         }
     }
     return res;
@@ -112,6 +114,7 @@ char* mfm_write_single_item(char* dest, char* item)
             break;
         default:
             *dest++ = *c;
+            break;
         }
     }
     *dest++ = '"';
