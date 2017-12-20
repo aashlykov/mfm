@@ -318,9 +318,18 @@ int mfm_get_kv(const void* one, const void* two)
  */
 void mfm_scr_size(int* h, int* w)
 {
+    *h = 0;
+    *w = 0;
     mfm_drain_input();
     printf("%s", "\e[1000;5000H\e[6n");
-    int res = scanf("\e[%i;%iR", h, w);
+    int *t = h, res;
+    for (char c = '\0'; c != 'R'; res = read(0, &c, 1)) {
+        if (c == ';') {
+            t = w;
+        } else if (c >= '0' && c <= '9') {
+            *t = *t * 10 + c - 48;
+        }
+    }
     mfm_drain_input();
 }
 
@@ -334,8 +343,10 @@ void mfm_command(char* comm)
     printf("%s", "\ec");
     res = system("stty sane;stty echo");
     res = system(comm);
-    printf("%s", "\e[1m\e[?25l");
     res = system("stty raw;stty -echo");
+    printf("%s", "\ec");
+    printf("%s", "\e[1m\e[?25l");
+    mfm_drain_input();
 }
 
 /**
