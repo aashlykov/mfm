@@ -55,7 +55,7 @@ char* mfm_all_selected(mfm_tab* tab)
     }
 
     //Write the result
-    char* res = malloc(r_len);
+    char* res = malloc(r_len + 1);
     char* cur = res;
     for (int i = 0; i < tab->len; i++) {
         if (tab->items[i].props & MFM_SEL) {
@@ -66,7 +66,7 @@ char* mfm_all_selected(mfm_tab* tab)
         cur = mfm_write_single_item(cur, tab->items[tab->act].text);
     }
 
-    res[r_len] = '\0';
+    *cur = '\0';
 
     return res;
 }
