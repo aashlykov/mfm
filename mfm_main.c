@@ -53,7 +53,7 @@ int main(int argc, char** argv)
     int res = system("stty raw;stty -echo");
     int exit_code;
     while (!(exit_code = mfm_main(&st)));
-    printf("%s", "\e[0m\e[?25h\e[2J\e[1;1H");
+    printf("%s", "\e[0m\e[?25h\e[2J\e[1;1H\ec");
     res = system("stty sane;stty echo");
 
     if (exit_code == 2) {

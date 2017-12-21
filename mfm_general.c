@@ -442,16 +442,16 @@ int mfm_dots_dir(char* path)
 void mfm_help(int h, int w)
 {
     printf("\e[%i;12H\e[49m\e[2K", h);
-    printf("%s", "\e[32mMK\e[31mD\e[32mIR ");
-    printf("%s", "\e[31mE\e[32mXEC ");
-    printf("%s", "\e[31mS\e[32mHELL ");
-    printf("%s", "\e[31mR\e[32mENAME ");
-    printf("%s", "\e[31mU\e[32mPDATE ");
-    printf("%s", "\e[31mH\e[32mIDDEN ");
-    printf("%s", "\e[31mG\e[32mOTO ");
-    printf("%s", "\e[31mC\e[32mOPY ");
-    printf("%s", "\e[31mM\e[32mOVE ");
-    printf("%s", "\e[31mQ\e[32mUIT ");
+    printf("%s", "\e[32mMK\e[36mD\e[32mIR ");
+    printf("%s", "\e[36mE\e[32mXEC ");
+    printf("%s", "\e[36mS\e[32mHELL ");
+    printf("%s", "\e[36mR\e[32mENAME ");
+    printf("%s", "\e[36mU\e[32mPDATE ");
+    printf("%s", "\e[36mH\e[32mIDDEN ");
+    printf("%s", "\e[36mG\e[32mOTO ");
+    printf("%s", "\e[36mC\e[32mOPY ");
+    printf("%s", "\e[36mM\e[32mOVE ");
+    printf("%s", "\e[36mQ\e[32mUIT ");
 }
 
 /**
