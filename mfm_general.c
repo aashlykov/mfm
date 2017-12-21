@@ -344,7 +344,6 @@ void mfm_command(char* comm)
     res = system("stty sane;stty echo");
     res = system(comm);
     res = system("stty raw;stty -echo");
-    printf("%s", "\ec");
     printf("%s", "\e[1m\e[?25l");
     mfm_drain_input();
 }
