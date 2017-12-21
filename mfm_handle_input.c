@@ -407,6 +407,8 @@ int mfm_handle_input(
         mfm_move(st);
         ri = 1;
         break;
+    case 23:
+        return mfm_close_tab(st);
     case 27:
         return mfm_handle_key(key, st, h, w);
     }
@@ -472,8 +474,6 @@ int mfm_handle_key(
         mfm_delete(tab, h, w);
         ri = 1;
         break;
-    case MFM_KEY_ESC:
-        return mfm_close_tab(st);
     }
     if (ri) {
         mfm_init_tab(tab, &(st->f_cmd));

@@ -441,17 +441,17 @@ int mfm_dots_dir(char* path)
  */
 void mfm_help(int h, int w)
 {
-    printf("\e[%i;1H\e[44m\e[2K", h);
-    printf("%s", "\e[37mMK\e[31mD\e[37mIR ");
-    printf("%s", "\e[31mE\e[37mXEC ");
-    printf("%s", "\e[31mS\e[37mHELL ");
-    printf("%s", "\e[31mR\e[37mENAME ");
-    printf("%s", "\e[31mU\e[37mPDATE ");
-    printf("%s", "\e[31mH\e[37mIDDEN ");
-    printf("%s", "\e[31mG\e[37mOTO ");
-    printf("%s", "\e[31mC\e[37mOPY ");
-    printf("%s", "\e[31mM\e[37mOVE ");
-    printf("%s", "\e[31mQ\e[37mUIT ");
+    printf("\e[%i;12H\e[49m\e[2K", h);
+    printf("%s", "\e[32mMK\e[31mD\e[32mIR ");
+    printf("%s", "\e[31mE\e[32mXEC ");
+    printf("%s", "\e[31mS\e[32mHELL ");
+    printf("%s", "\e[31mR\e[32mENAME ");
+    printf("%s", "\e[31mU\e[32mPDATE ");
+    printf("%s", "\e[31mH\e[32mIDDEN ");
+    printf("%s", "\e[31mG\e[32mOTO ");
+    printf("%s", "\e[31mC\e[32mOPY ");
+    printf("%s", "\e[31mM\e[32mOVE ");
+    printf("%s", "\e[31mQ\e[32mUIT ");
 }
 
 /**
@@ -463,16 +463,15 @@ void mfm_help(int h, int w)
 void mfm_draw_numbers(mfm_state* st, int h, int w)
 {
     int i = 0;
-    printf("\e[%i;%iH", h, w - 10);
+    printf("\e[%i;1H", h);
     while (i < st->len) {
         if (i == st->cur) {
             printf("%s", "\e[31;43m ");
         } else {
-            printf("\e[33;41m%i", i);
+            printf("\e[33;49m%i", i);
         }
         i++;
     }
-    printf("%s", "\e[33;41m\e[0K");
 }
 
 /**

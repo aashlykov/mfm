@@ -15,7 +15,7 @@ Run program:
 All dirs will be opened in tabs (can be opened no more than ten tabs).
 ## Controls:
 * Tab - create new tab
-* Esc - close current tab (quit from program with closing last tab)
+* Ctrl+W - close current tab (quit from program with closing last tab)
 * Space or Insert - select/unselect current item
 * \+ or = - select all items in tab
 * \- or _ - unselect all items

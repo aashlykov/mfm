@@ -247,7 +247,7 @@ void mfm_draw_tab(
     int w
 ) {
     //Draw the directory in the head
-    printf("\e[1;1H\e[37;44m\e[2K%s", tab->dir);
+    printf("\e[1;1H\e[32;49m\e[2K%s", tab->dir);
 
         //Position on the screen
     int scr_pos,
@@ -293,11 +293,11 @@ void mfm_draw_tab(
 
     //Show current position in menu
     printf(
-        "\e[36;44m\e[1;%iH\e[0K%i%c",
+        "\e[35;49m\e[1;%iH\e[0K%i%c",
         w - 3,
         (tab->act + 1) * 100 / tab->len,
         '%'
-   );
+    );
 }
 
 /**
