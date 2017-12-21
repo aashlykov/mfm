@@ -271,7 +271,7 @@ void mfm_draw_tab(
             scr_pos + off,
             tab->items[tab_pos].props & MFM_SEL ? 33 :
                 tab->items[tab_pos].props & MFM_EXE ? 36 : 37,
-            tab_pos == tab->act ? 42 : 40);
+            tab_pos == tab->act ? 42 : 49);
         printf("%s\e[0K", tab->items[tab_pos].text);
     }
 
@@ -279,7 +279,7 @@ void mfm_draw_tab(
     if (!off) {
         printf("\e[45m\e[%i;1H\e[2K", scr_pos);
     }
-    printf("%s", "\e[40m");
+    printf("%s", "\e[49m");
     scr_pos++;
     for (; scr_pos <= h - 1; scr_pos++) {
         printf("\e[%i;1H\e[2K", scr_pos);
