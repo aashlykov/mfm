@@ -265,7 +265,7 @@ void mfm_draw_tab(
         if (off != !(tab->items[tab_pos].props & MFM_DIR)) {
             printf("\e[33;49m\e[%i;1H", scr_pos);
             for (int i = 1; i <= w; i++) {
-                printf("%c", '-');
+                printf("%s", "─");
             }
         }
         off = !(tab->items[tab_pos].props & MFM_DIR);
@@ -282,7 +282,7 @@ void mfm_draw_tab(
     if (!off) {
         printf("\e[33;49m\e[%i;1H", scr_pos);
         for (int i = 1; i <= w; i++) {
-            printf("%c", '-');
+            printf("%s", "─");
         }
     }
     printf("%s", "\e[49m");
