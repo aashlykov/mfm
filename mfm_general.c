@@ -466,7 +466,7 @@ void mfm_draw_numbers(mfm_state* st, int h, int w)
     printf("\e[%i;1H", h);
     while (i < st->len) {
         if (i == st->cur) {
-            printf("%s", "\e[31;43m ");
+            printf("%s", "\e[31;46m ");
         } else {
             printf("\e[33;49m%i", i);
         }
