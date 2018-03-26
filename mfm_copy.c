@@ -7,6 +7,8 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <fcntl.h>
+#include <errno.h>
 
 #include "mfm_copy.h"
 #include "mfm_general.h"
@@ -355,33 +357,42 @@ int mfm_copy_file(
         return 1;
     }
 
+    stat(source, &st);
+
     //Open input file
-    FILE* inp = fopen(source, "r");
-    if (!inp) {
+    int inp = open(source, O_RDONLY | O_DSYNC | O_RSYNC, 0);
+    if (inp == -1) {
         return 1;
     }
 
     //Open output file
-    FILE* otp = fopen(dest, "w");
-    if (!otp) {
-        fclose(inp);
+    int otp = open(dest, O_WRONLY | O_CREAT | O_DSYNC | O_RSYNC, st.st_mode);
+    if (otp == -1) {
+        close(inp);
         return 1;
     }
 
     //Main cycle of coping
     int bs = st.st_blksize;
     char* buff = malloc(bs);
-    while (!feof(inp)) {
-        int readed = fread(buff, 1, bs, inp);
-        fwrite(buff, 1, readed, otp);
+    ssize_t readed;
+    while (readed = read(inp, buff, bs)) {
+        if (readed < 0) {
+            mfm_show_message(strerror(errno), 1);
+            break;
+        }
+        ssize_t written = 0;
+        while (written < readed) {
+            written += write(otp, buff + written, readed - written);
+        }
         *cur += readed;
         mfm_copy_progress(*cur, ttl);
     }
     free(buff);
 
     //finish work
-    fclose(inp);
-    fclose(otp);
+    close(inp);
+    close(otp);
     return 0;
 }
 
