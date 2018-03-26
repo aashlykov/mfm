@@ -407,7 +407,6 @@ void mfm_copy_progress(long long cur, long long ttl)
     if (time(NULL) - tm < 1) {
         return;
     }
-    int prc = cur * 1000 / ttl;
     char mess[80];
     char cur_txt[40], ttl_txt[40];
     mfm_get_size_text(cur, cur_txt);
