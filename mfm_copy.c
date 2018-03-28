@@ -360,13 +360,13 @@ int mfm_copy_file(
     stat(source, &st);
 
     //Open input file
-    int inp = open(source, O_RDONLY | O_DSYNC | O_RSYNC, 0);
+    int inp = open(source, O_RDONLY, 0);
     if (inp == -1) {
         return 1;
     }
 
     //Open output file
-    int otp = open(dest, O_WRONLY | O_CREAT | O_DSYNC | O_RSYNC, st.st_mode);
+    int otp = open(dest, O_WRONLY | O_CREAT, st.st_mode);
     if (otp == -1) {
         close(inp);
         return 1;
