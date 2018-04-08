@@ -43,7 +43,6 @@ void mfm_goto(char** bookmarks)
  */
 void mfm_input_goto(int h, int w)
 {
-    mfm_drain_input();
     printf("\e[%i;1H\e[33;41m\e[1K", h);
     char* dir = mfm_read_line(h, 1, w, NULL);
     if (dir) {

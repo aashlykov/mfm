@@ -35,6 +35,8 @@ All dirs will be opened in tabs (can be opened no more than ten tabs).
 * H - show/hide hidden files
 * G - select directory from bookmarks and go to it
 * Ctrl-G - go to any directory
+* J - jump to directory item at current list
+* Ctrl-J - jump to file item at current list
 * C - copy all selected items at all tabs except current to the directory of current tab
 * M - same way move items
 * Q - quit from program

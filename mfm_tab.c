@@ -223,11 +223,10 @@ int mfm_init_tab_item(char* name, struct stat* st, void* udata)
     //Is it directory?
     if (S_ISDIR(st->st_mode)) {
         tab->items[i].props = MFM_DIR;
-    } else if (S_ISDIR(st->st_mode)) {
+    } else if (S_ISREG(st->st_mode)) {
         tab->items[i].props = MFM_REG;
-    //Or executable?
-    } else {
-        tab->items[i].props = mfm_is_exec(name, st, f_cmd);
+        //Or executable?
+        tab->items[i].props &= mfm_is_exec(name, st, f_cmd);
     }
 
     //Finish work

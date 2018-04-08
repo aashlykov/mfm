@@ -194,7 +194,7 @@ int mfm_read_line_sp_keys(mfm_key key, char** str, int* cur, int* curr);
  * @param x
  * @param w Available length
  * @param exist Previous string
- * @return
+ * @return String from user or NULL if user cancelled the input by ESCAPE key. MUST call free() on result after using
  */
 char* mfm_read_line(
     int y,

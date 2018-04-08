@@ -45,7 +45,7 @@ void mfm_read_key(char* buf, mfm_key* key);
  * @param x
  * @param w Available length
  * @param exist Current string to edit - can be NULL
- * @return
+ * @return String from user or NULL if user cancelled the input by ESCAPE key. MUST call free() on result after using
  */
 char* mfm_read_line(
     int y,

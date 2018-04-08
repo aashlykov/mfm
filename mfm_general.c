@@ -449,6 +449,7 @@ void mfm_help(int h, int w)
     printf("%s", "\e[36mU\e[32mPDATE ");
     printf("%s", "\e[36mH\e[32mIDDEN ");
     printf("%s", "\e[36mG\e[32mOTO ");
+    printf("%s", "\e[36mJ\e[32mUMP ");
     printf("%s", "\e[36mC\e[32mOPY ");
     printf("%s", "\e[36mM\e[32mOVE ");
     printf("%s", "\e[36mQ\e[32mUIT ");
