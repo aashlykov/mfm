@@ -502,12 +502,12 @@ void mfm_exec_single(
 }
 
 /**
- * 
+ * Jump to the file or directory
  * @param tab
  * @param prop
  * @param h
  * @param w
- * @return 
+ * @return finded position
  */
 int mfm_jump(mfm_tab* tab, int dir, int h, int w)
 {
