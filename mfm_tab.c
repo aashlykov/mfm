@@ -226,7 +226,7 @@ int mfm_init_tab_item(char* name, struct stat* st, void* udata)
     } else if (S_ISREG(st->st_mode)) {
         tab->items[i].props = MFM_REG;
         //Or executable?
-        tab->items[i].props &= mfm_is_exec(name, st, f_cmd);
+        tab->items[i].props |= mfm_is_exec(name, st, f_cmd);
     }
 
     //Finish work
