@@ -110,7 +110,7 @@ int mfm_handle_input(
         ri = 1;
         break;
     case 'd': case 'D': {
-        printf("\e[%i;1H\e[41m\e[2K", h);
+        printf("\e[%i;1H\e[37;41m\e[2K", h);
         char* new_dir = mfm_read_line(h, 1, w, NULL);
         mfm_mkdir(new_dir);
         free(new_dir);
@@ -517,7 +517,7 @@ int mfm_jump(mfm_tab* tab, int dir, int h, int w)
         return tab->act;
     }
     int ls = strlen(s);
-    
+
     int res = -1;
     dir = !!dir;
     for (int i = 0; i < tab->len; i++) {
@@ -529,7 +529,7 @@ int mfm_jump(mfm_tab* tab, int dir, int h, int w)
             break;
         }
     }
-    
+
     free(s);
     return res;
 }
