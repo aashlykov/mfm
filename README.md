@@ -1,3 +1,8 @@
+# Attention
+Project has been moved here:
+
+https://gitlab.com/dron2065/mfm
+
 # Abstract
 Minimal File Manager is a little console program written in C. POSIX only.
 # Building
